@@ -1,0 +1,440 @@
+import { renderHook, act } from "@testing-library/react-hooks"
+import { useBookStore } from "../lib/bookStore"
+import { generateRandomBook } from "../lib/randomBookGenerator"
+import { describe, test, expect } from "@jest/globals"
+
+describe("Book CRUD Operations - Comprehensive Tests", () => {
+  // CREATE TESTS
+  describe("Create Operations", () => {
+    test("should add a single book correctly", () => {
+      const { result } = renderHook(() => useBookStore())
+      const initialLength = result.current.books.length
+
+      const newBook = {
+        title: "Test Book",
+        author: "Test Author",
+        genre: "Test Genre",
+        price: 19.99,
+        rating: 4,
+      }
+
+      act(() => {
+        result.current.addBook(newBook)
+      })
+
+      expect(result.current.books.length).toBe(initialLength + 1)
+
+      const addedBook = result.current.books.find((book) => book.title === "Test Book")
+      expect(addedBook).toBeDefined()
+      expect(addedBook?.author).toBe("Test Author")
+      expect(addedBook?.genre).toBe("Test Genre")
+      expect(addedBook?.price).toBe(19.99)
+      expect(addedBook?.rating).toBe(4)
+      expect(addedBook?.id).toBeDefined()
+    })
+
+    test("should add multiple books correctly", () => {
+      const { result } = renderHook(() => useBookStore())
+      const initialLength = result.current.books.length
+
+      const newBooks = [
+        {
+          title: "Multiple Test 1",
+          author: "Author 1",
+          genre: "Fiction",
+          price: 12.99,
+          rating: 3,
+        },
+        {
+          title: "Multiple Test 2",
+          author: "Author 2",
+          genre: "Non-Fiction",
+          price: 15.99,
+          rating: 5,
+        },
+        {
+          title: "Multiple Test 3",
+          author: "Author 3",
+          genre: "Mystery",
+          price: 9.99,
+          rating: 4,
+        },
+      ]
+
+      act(() => {
+        newBooks.forEach((book) => result.current.addBook(book))
+      })
+
+      expect(result.current.books.length).toBe(initialLength + 3)
+
+      // Check if all books were added
+      newBooks.forEach((newBook) => {
+        const addedBook = result.current.books.find((book) => book.title === newBook.title)
+        expect(addedBook).toBeDefined()
+        expect(addedBook?.author).toBe(newBook.author)
+        expect(addedBook?.genre).toBe(newBook.genre)
+        expect(addedBook?.price).toBe(newBook.price)
+        expect(addedBook?.rating).toBe(newBook.rating)
+      })
+    })
+
+    test("should generate unique IDs for each book", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add multiple books
+      act(() => {
+        for (let i = 0; i < 5; i++) {
+          result.current.addBook(generateRandomBook())
+        }
+      })
+
+      // Check if all IDs are unique
+      const ids = result.current.books.map((book) => book.id)
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
+    })
+  })
+
+  // READ TESTS
+  describe("Read Operations", () => {
+    test("should retrieve all books", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add some books first
+      act(() => {
+        for (let i = 0; i < 3; i++) {
+          result.current.addBook(generateRandomBook())
+        }
+      })
+
+      // Check if books can be retrieved
+      expect(result.current.books.length).toBeGreaterThanOrEqual(3)
+    })
+
+    test("should filter books by genre", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Clear existing books and add test books
+      act(() => {
+        // Add books with specific genres
+        result.current.addBook({
+          title: "Fiction Book 1",
+          author: "Author 1",
+          genre: "Fiction",
+          price: 10.99,
+          rating: 4,
+        })
+
+        result.current.addBook({
+          title: "Fiction Book 2",
+          author: "Author 2",
+          genre: "Fiction",
+          price: 12.99,
+          rating: 3,
+        })
+
+        result.current.addBook({
+          title: "Mystery Book",
+          author: "Author 3",
+          genre: "Mystery",
+          price: 9.99,
+          rating: 5,
+        })
+      })
+
+      // Filter books by genre
+      const fictionBooks = result.current.books.filter((book) => book.genre === "Fiction")
+      const mysteryBooks = result.current.books.filter((book) => book.genre === "Mystery")
+
+      // Check filtered results
+      expect(fictionBooks.length).toBeGreaterThanOrEqual(2)
+      expect(mysteryBooks.length).toBeGreaterThanOrEqual(1)
+    })
+
+    test("should filter books by rating", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add books with different ratings
+      act(() => {
+        result.current.addBook({
+          title: "High Rating Book",
+          author: "Author 1",
+          genre: "Fiction",
+          price: 10.99,
+          rating: 5,
+        })
+
+        result.current.addBook({
+          title: "Medium Rating Book",
+          author: "Author 2",
+          genre: "Fiction",
+          price: 12.99,
+          rating: 3,
+        })
+
+        result.current.addBook({
+          title: "Low Rating Book",
+          author: "Author 3",
+          genre: "Mystery",
+          price: 9.99,
+          rating: 1,
+        })
+      })
+
+      // Filter books by rating
+      const highRatedBooks = result.current.books.filter((book) => book.rating >= 4)
+      const lowRatedBooks = result.current.books.filter((book) => book.rating <= 2)
+
+      // Check filtered results
+      expect(highRatedBooks.length).toBeGreaterThanOrEqual(1)
+      expect(lowRatedBooks.length).toBeGreaterThanOrEqual(1)
+      expect(highRatedBooks.some((book) => book.title === "High Rating Book")).toBe(true)
+      expect(lowRatedBooks.some((book) => book.title === "Low Rating Book")).toBe(true)
+    })
+
+    test("should filter books by price range", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add books with different prices
+      act(() => {
+        result.current.addBook({
+          title: "Expensive Book",
+          author: "Author 1",
+          genre: "Fiction",
+          price: 29.99,
+          rating: 4,
+        })
+
+        result.current.addBook({
+          title: "Medium Price Book",
+          author: "Author 2",
+          genre: "Fiction",
+          price: 15.99,
+          rating: 3,
+        })
+
+        result.current.addBook({
+          title: "Cheap Book",
+          author: "Author 3",
+          genre: "Mystery",
+          price: 5.99,
+          rating: 4,
+        })
+      })
+
+      // Filter books by price range
+      const expensiveBooks = result.current.books.filter((book) => book.price > 20)
+      const cheapBooks = result.current.books.filter((book) => book.price < 10)
+
+      // Check filtered results
+      expect(expensiveBooks.length).toBeGreaterThanOrEqual(1)
+      expect(cheapBooks.length).toBeGreaterThanOrEqual(1)
+      expect(expensiveBooks.some((book) => book.title === "Expensive Book")).toBe(true)
+      expect(cheapBooks.some((book) => book.title === "Cheap Book")).toBe(true)
+    })
+  })
+
+  // UPDATE TESTS
+  describe("Update Operations", () => {
+    test("should update a book completely", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add a book first
+      act(() => {
+        result.current.addBook({
+          title: "Original Title",
+          author: "Original Author",
+          genre: "Original Genre",
+          price: 9.99,
+          rating: 3,
+        })
+      })
+
+      // Find the book to update
+      const bookToUpdate = result.current.books.find((book) => book.title === "Original Title")
+      expect(bookToUpdate).toBeDefined()
+
+      if (bookToUpdate) {
+        // Update all fields of the book
+        const updatedBookData = {
+          ...bookToUpdate,
+          title: "Updated Title",
+          author: "Updated Author",
+          genre: "Updated Genre",
+          price: 19.99,
+          rating: 5,
+        }
+
+        act(() => {
+          result.current.updateBook(updatedBookData)
+        })
+
+        // Check if book was updated
+        const updatedBook = result.current.books.find((book) => book.id === bookToUpdate.id)
+        expect(updatedBook).toBeDefined()
+        expect(updatedBook?.title).toBe("Updated Title")
+        expect(updatedBook?.author).toBe("Updated Author")
+        expect(updatedBook?.genre).toBe("Updated Genre")
+        expect(updatedBook?.price).toBe(19.99)
+        expect(updatedBook?.rating).toBe(5)
+      }
+    })
+
+    test("should update only specific fields of a book", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add a book first
+      act(() => {
+        result.current.addBook({
+          title: "Partial Update Book",
+          author: "Original Author",
+          genre: "Original Genre",
+          price: 9.99,
+          rating: 3,
+        })
+      })
+
+      // Find the book to update
+      const bookToUpdate = result.current.books.find((book) => book.title === "Partial Update Book")
+      expect(bookToUpdate).toBeDefined()
+
+      if (bookToUpdate) {
+        // Update only title and price
+        const updatedBookData = {
+          ...bookToUpdate,
+          title: "New Title Only",
+          price: 14.99,
+        }
+
+        act(() => {
+          result.current.updateBook(updatedBookData)
+        })
+
+        // Check if only specified fields were updated
+        const updatedBook = result.current.books.find((book) => book.id === bookToUpdate.id)
+        expect(updatedBook).toBeDefined()
+        expect(updatedBook?.title).toBe("New Title Only")
+        expect(updatedBook?.author).toBe("Original Author") // Unchanged
+        expect(updatedBook?.genre).toBe("Original Genre") // Unchanged
+        expect(updatedBook?.price).toBe(14.99)
+        expect(updatedBook?.rating).toBe(3) // Unchanged
+      }
+    })
+
+    test("should not update non-existent book", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      const initialBooks = [...result.current.books]
+
+      // Try to update a book with non-existent ID
+      act(() => {
+        result.current.updateBook({
+          id: 9999, // Non-existent ID
+          title: "Non-existent Book",
+          author: "No Author",
+          genre: "No Genre",
+          price: 0,
+          rating: 0,
+        })
+      })
+
+      // Check that books array remains unchanged
+      expect(result.current.books).toEqual(initialBooks)
+    })
+  })
+
+  // DELETE TESTS
+  describe("Delete Operations", () => {
+    test("should delete a book by ID", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add a book first
+      act(() => {
+        result.current.addBook({
+          title: "Book to Delete",
+          author: "Delete Author",
+          genre: "Delete Genre",
+          price: 7.99,
+          rating: 2,
+        })
+      })
+
+      // Find the book to delete
+      const bookToDelete = result.current.books.find((book) => book.title === "Book to Delete")
+      expect(bookToDelete).toBeDefined()
+
+      const initialLength = result.current.books.length
+
+      if (bookToDelete) {
+        // Delete the book
+        act(() => {
+          result.current.deleteBook(bookToDelete.id)
+        })
+
+        // Check if book was deleted
+        expect(result.current.books.length).toBe(initialLength - 1)
+        const deletedBook = result.current.books.find((book) => book.id === bookToDelete.id)
+        expect(deletedBook).toBeUndefined()
+      }
+    })
+
+    test("should not change books array when deleting non-existent ID", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      const initialBooks = [...result.current.books]
+      const initialLength = initialBooks.length
+
+      // Try to delete a book with non-existent ID
+      act(() => {
+        result.current.deleteBook(9999) // Non-existent ID
+      })
+
+      // Check that books array remains unchanged
+      expect(result.current.books.length).toBe(initialLength)
+    })
+
+    test("should delete multiple books", () => {
+      const { result } = renderHook(() => useBookStore())
+
+      // Add multiple books
+      act(() => {
+        result.current.addBook({
+          title: "Multiple Delete 1",
+          author: "Author 1",
+          genre: "Fiction",
+          price: 10.99,
+          rating: 3,
+        })
+
+        result.current.addBook({
+          title: "Multiple Delete 2",
+          author: "Author 2",
+          genre: "Fiction",
+          price: 12.99,
+          rating: 4,
+        })
+      })
+
+      // Find the books to delete
+      const book1 = result.current.books.find((book) => book.title === "Multiple Delete 1")
+      const book2 = result.current.books.find((book) => book.title === "Multiple Delete 2")
+
+      expect(book1).toBeDefined()
+      expect(book2).toBeDefined()
+
+      const initialLength = result.current.books.length
+
+      // Delete the books
+      act(() => {
+        if (book1) result.current.deleteBook(book1.id)
+        if (book2) result.current.deleteBook(book2.id)
+      })
+
+      // Check if books were deleted
+      expect(result.current.books.length).toBe(initialLength - 2)
+      expect(result.current.books.find((book) => book.title === "Multiple Delete 1")).toBeUndefined()
+      expect(result.current.books.find((book) => book.title === "Multiple Delete 2")).toBeUndefined()
+    })
+  })
+})
+
