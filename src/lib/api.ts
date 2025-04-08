@@ -3,27 +3,57 @@ import { offlineStorage } from './offlineStorage';
 
 const API_URL = 'http://localhost:3001/api';
 
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  filter?: string;
+}
+
+export interface PaginatedResponse<T> {
+  books: T[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
+
 export const api = {
   baseUrl: API_URL,
 
-  async getBooks(sort?: string, filter?: string) {
+  async getBooks(params?: PaginationParams): Promise<PaginatedResponse<Book>> {
     try {
-      const params = new URLSearchParams();
-      if (sort) params.append('sort', sort);
-      if (filter) params.append('filter', filter);
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.sort) queryParams.append('sort', params.sort);
+      if (params?.filter) queryParams.append('filter', params.filter);
       
-      const response = await fetch(`${API_URL}/books?${params.toString()}`);
+      const response = await fetch(`${API_URL}/books?${queryParams.toString()}`);
       if (!response.ok) throw new Error('Failed to fetch books');
       
-      const books = await response.json();
+      const data = await response.json();
       
       // Cache books for offline use
-      offlineStorage.saveBooks(books);
+      offlineStorage.saveBooks(data.books);
       
-      return books;
+      return data;
     } catch (error) {
       console.warn('Using offline books due to error:', error);
-      return offlineStorage.getBooks();
+      const offlineBooks = offlineStorage.getBooks();
+      return {
+        books: offlineBooks,
+        pagination: {
+          total: offlineBooks.length,
+          page: 1,
+          limit: offlineBooks.length,
+          totalPages: 1,
+          hasMore: false
+        }
+      };
     }
   },
 

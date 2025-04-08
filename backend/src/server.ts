@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { body, validationResult, param } from 'express-validator';
+import { body, validationResult, param, query } from 'express-validator';
 import { Book } from './types';
 
 const app = express();
@@ -27,9 +27,15 @@ const validateId = [
   param('id').isInt({ min: 1 }).withMessage('ID must be a positive integer')
 ];
 
+// Validate pagination parameters
+const validatePagination = [
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100')
+];
+
 // Routes
-app.get('/api/books', (req: Request, res: Response) => {
-  const { sort, filter } = req.query;
+app.get('/api/books', validatePagination, (req: Request, res: Response) => {
+  const { sort, filter, page = '1', limit = '20' } = req.query;
   let filteredBooks = [...books];
 
   // Apply filtering
@@ -56,7 +62,24 @@ app.get('/api/books', (req: Request, res: Response) => {
     }
   }
 
-  res.json(filteredBooks);
+  // Apply pagination
+  const pageNum = parseInt(page as string);
+  const limitNum = parseInt(limit as string);
+  const startIndex = (pageNum - 1) * limitNum;
+  const endIndex = startIndex + limitNum;
+  const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+  
+  // Return paginated results with metadata
+  res.json({
+    books: paginatedBooks,
+    pagination: {
+      total: filteredBooks.length,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(filteredBooks.length / limitNum),
+      hasMore: endIndex < filteredBooks.length
+    }
+  });
 });
 
 app.post('/api/books', validateBook, (req: Request, res: Response) => {
@@ -114,4 +137,4 @@ if (require.main === module) {
   });
 }
 
-export default app; 
+export default app;
