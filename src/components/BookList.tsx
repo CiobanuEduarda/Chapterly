@@ -11,7 +11,7 @@ interface BookListProps {
 }
 
 export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
-  const { state, loadMoreBooks, setFilter, setSort } = useBooks();
+  const { state, loadMoreBooks, setFilter, setSort, refreshBooks } = useBooks();
   const { books, isLoading, isOfflineMode, pagination } = state;
   const { isConnected, lastMessage } = useWebSocket();
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,10 +39,49 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   // Handle WebSocket updates
   useEffect(() => {
     if (lastMessage?.type === 'books') {
-      // Update the books list with the new data
-      loadMoreBooks();
+      // Get the updated books from the WebSocket message
+      const updatedBooks = lastMessage.data;
+      
+      // Apply current filters and sorting to the updated books
+      let filteredBooks = [...updatedBooks];
+      
+      // Apply search filter
+      if (searchTerm) {
+        filteredBooks = filteredBooks.filter(book => 
+          book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          book.author.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      // Apply genre filter
+      if (filterGenre) {
+        filteredBooks = filteredBooks.filter(book => book.genre === filterGenre);
+      }
+      
+      // Apply rating filter
+      if (filterRating > 0) {
+        filteredBooks = filteredBooks.filter(book => book.rating >= filterRating);
+      }
+      
+      // Apply sorting
+      if (sortField) {
+        filteredBooks.sort((a, b) => {
+          const aValue = String(a[sortField as keyof Book]);
+          const bValue = String(b[sortField as keyof Book]);
+          return sortDirection === "asc" ? 
+            (aValue > bValue ? 1 : -1) : 
+            (bValue > aValue ? 1 : -1);
+        });
+      }
+      
+      // Update the books state directly in the context
+      setFilter(null); // Reset filter to get all books
+      setSort(null); // Reset sort to get all books
+      
+      // Force a refresh of the books
+      refreshBooks();
     }
-  }, [lastMessage, loadMoreBooks]);
+  }, [lastMessage, searchTerm, filterGenre, filterRating, sortField, sortDirection, refreshBooks, setFilter, setSort]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,11 +150,6 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       <h1 className="text-3xl font-bold bg-[#52796F] p-6 rounded-md shadow-md text-center text-[#042405]">
         Book Shelf
       </h1>
-
-      {/* Connection Status */}
-      <div className={`text-center p-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'} text-white rounded-md mt-4`}>
-        {isConnected ? 'Connected to Real-Time Updates' : 'Disconnected - Updates may be delayed'}
-      </div>
 
       {/* Filtering and Search */}
       <div className="bg-[#E1A591] p-6 rounded-md shadow-md mt-6">

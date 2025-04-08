@@ -4,11 +4,25 @@ import { body, validationResult, param, query } from 'express-validator';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import { Book } from './types';
+import path from 'path';
+import fs from 'fs';
+import { promisify } from 'util';
+import { pipeline } from 'stream';
 
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 const port = 3001;
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
 
 // In-memory storage
 export let books: Book[] = [];
@@ -16,6 +30,7 @@ export let books: Book[] = [];
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
 
 // Validation middleware
 const validateBook = [
@@ -137,6 +152,10 @@ app.post('/api/books', validateBook, (req: Request, res: Response) => {
     ...req.body
   };
   books.push(newBook);
+  
+  // Broadcast the update to all connected clients
+  broadcast({ type: 'books', data: books });
+  
   res.status(201).json(newBook);
 });
 
@@ -154,6 +173,10 @@ app.put('/api/books/:id', validateId, validateBook, (req: Request, res: Response
   }
 
   books[index] = { ...books[index], ...req.body };
+  
+  // Broadcast the update to all connected clients
+  broadcast({ type: 'books', data: books });
+  
   res.json(books[index]);
 });
 
@@ -171,7 +194,113 @@ app.delete('/api/books/:id', validateId, (req: Request, res: Response) => {
   }
 
   books = books.filter(book => book.id !== id);
+  
+  // Broadcast the update to all connected clients
+  broadcast({ type: 'books', data: books });
+  
   res.status(204).send();
+});
+
+// File upload endpoint
+app.post('/api/upload', async (req: Request, res: Response) => {
+  try {
+    if (!req.headers['content-type']?.includes('multipart/form-data')) {
+      return res.status(400).json({ error: 'Content-Type must be multipart/form-data' });
+    }
+
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = 'file-' + uniqueSuffix + '.tmp';
+    const filePath = path.join(uploadsDir, filename);
+
+    const writeStream = fs.createWriteStream(filePath);
+    const streamPipeline = promisify(pipeline);
+
+    await streamPipeline(req, writeStream);
+
+    const stats = await promisify(fs.stat)(filePath);
+    const fileInfo = {
+      filename,
+      originalName: req.headers['x-file-name'] || filename,
+      size: stats.size,
+      mimetype: req.headers['content-type'],
+      path: `/uploads/${filename}`
+    };
+
+    res.json(fileInfo);
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'File upload failed' });
+  }
+});
+
+// File download endpoint
+app.get('/api/download/:filename', async (req: Request, res: Response) => {
+  try {
+    const { filename } = req.params;
+    if (!filename) {
+      return res.status(400).json({ error: 'Filename is required' });
+    }
+    
+    const filePath = path.join(uploadsDir, filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    const stat = await promisify(fs.stat)(filePath);
+    const fileStream = fs.createReadStream(filePath);
+
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+
+    fileStream.pipe(res);
+  } catch (error) {
+    console.error('Download error:', error);
+    res.status(500).json({ error: 'File download failed' });
+  }
+});
+
+// Delete file endpoint
+app.delete('/api/files/:filename', async (req: Request, res: Response) => {
+  try {
+    const filename = req.params.filename;
+    if (!filename) {
+      return res.status(400).json({ error: 'Filename is required' });
+    }
+
+    const filePath = path.join(uploadsDir, filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    await promisify(fs.unlink)(filePath);
+    res.json({ message: 'File deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: 'File deletion failed' });
+  }
+});
+
+// List files endpoint
+app.get('/api/files', async (req: Request, res: Response) => {
+  try {
+    const files = await promisify(fs.readdir)(uploadsDir);
+    const fileDetails = await Promise.all(
+      files.map(async (filename) => {
+        const filePath = path.join(uploadsDir, filename);
+        const stats = await promisify(fs.stat)(filePath);
+        return {
+          filename,
+          size: stats.size,
+          uploadDate: stats.mtime
+        };
+      })
+    );
+    res.json(fileDetails);
+  } catch (error) {
+    console.error('List files error:', error);
+    res.status(500).json({ error: 'Failed to list files' });
+  }
 });
 
 // Start the server

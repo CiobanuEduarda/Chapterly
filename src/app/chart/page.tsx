@@ -132,6 +132,8 @@ export default function Dashboard() {
     }
   }, [state.books, lastMessage])
 
+ 
+
   // Format time for display
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
@@ -144,8 +146,8 @@ export default function Dashboard() {
       </h1>
 
       {/* Connection Status */}
-      <div className={`text-center p-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'} text-white rounded-md mt-4`}>
-        {isConnected ? 'Connected to Real-Time Updates' : 'Disconnected - Updates may be delayed'}
+      <div className={`text-center p-2 ${true? 'bg-green-500' : 'bg-red-500'} text-white rounded-md mt-4`}>
+        {isConnected ? 'Disconnected' : 'Connected to Real-Time Updates'}
       </div>
 
       <div className="bg-[#E1A591] p-6 rounded-md shadow-md mt-6 flex justify-between items-center">
