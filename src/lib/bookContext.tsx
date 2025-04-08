@@ -1,6 +1,9 @@
 "use client"
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { api } from './api';
+import { useNetwork } from './networkContext';
+import { useToast } from './toastContext';
+import { offlineStorage } from './offlineStorage';
 
 // Define the structure of a Book object
 export interface Book {
@@ -15,13 +18,9 @@ export interface Book {
 // Define the structure of the global book state
 interface BookState {
   books: Book[]
+  isLoading: boolean
+  isOfflineMode: boolean
 }
-
-// Define possible actions for modifying the book state
-type BookAction =
-  | { type: "ADD_BOOK"; payload: Omit<Book, "id"> } // Adds a book (without an ID, since it will be generated)
-  | { type: "UPDATE_BOOK"; payload: Book } // Updates an existing book
-  | { type: "DELETE_BOOK"; payload: number } // Deletes a book by ID
 
 // Define the context type, including state and action functions
 interface BookContextType {
@@ -32,99 +31,114 @@ interface BookContextType {
   refreshBooks: () => Promise<void>
 }
 
-// Initial state with some sample books
-const initialState: BookState = {
-  books: [
-    { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", genre: "Classic", price: 5, rating: 4 },
-    { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee", genre: "Fiction", price: 9, rating: 5 },
-    { id: 3, title: "1984", author: "George Orwell", genre: "Dystopian", price: 9.99, rating: 4 },
-    { id: 4, title: "Pride and Prejudice", author: "Jane Austen", genre: "Romance", price: 5.22, rating: 3 },
-  ],
-}
-
 // Create a React context to provide global state management
 const BookContext = createContext<BookContextType | undefined>(undefined);
 
-// Reducer function to handle different actions and update the state
-function bookReducer(state: BookState, action: BookAction): BookState {
-  switch (action.type) {
-    case "ADD_BOOK":
-      return {
-        ...state,
-        books: [
-          ...state.books,
-          {
-            ...action.payload,
-            id: Math.max(0, ...state.books.map((b) => b.id)) + 1, // Generate a new unique ID
-          },
-        ],
-      }
-    case "UPDATE_BOOK":
-      return {
-        ...state,
-        books: state.books.map((book) => (book.id === action.payload.id ? action.payload : book)),
-      }
-    case "DELETE_BOOK":
-      return {
-        ...state,
-        books: state.books.filter((book) => book.id !== action.payload),
-      }
-    default:
-      return state
-  }
-}
-
 // Provider component that wraps the application and provides the book context
 export function BookProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<BookState>({ books: [] });
+  const { status } = useNetwork();
+  const { showToast } = useToast();
+  const [state, setState] = useState<BookState>({ 
+    books: [], 
+    isLoading: true,
+    isOfflineMode: false
+  });
 
   const refreshBooks = useCallback(async () => {
     try {
+      setState(prev => ({ ...prev, isLoading: true }));
       const books = await api.getBooks();
-      setState({ books });
+      
+      setState({
+        books,
+        isLoading: false,
+        isOfflineMode: status !== 'online'
+      });
     } catch (error) {
       console.error('Failed to fetch books:', error);
+      
+      // If fetch fails, try to get books from offline storage
+      const offlineBooks = offlineStorage.getBooks();
+      
+      setState({
+        books: offlineBooks,
+        isLoading: false,
+        isOfflineMode: true
+      });
+      
+      if (offlineBooks.length > 0) {
+        showToast('Using offline book data', 'info');
+      }
     }
-  }, []);
+  }, [status, showToast]);
 
   const addBook = useCallback(async (book: Omit<Book, 'id'>) => {
     try {
       const newBook = await api.addBook(book);
-      setState(prev => ({ books: [...prev.books, newBook] }));
+      setState(prev => ({ 
+        ...prev,
+        books: [...prev.books, newBook],
+        isOfflineMode: status !== 'online'
+      }));
+      
+      if (status !== 'online') {
+        showToast('Book added in offline mode', 'info');
+      } else {
+        showToast('Book added successfully', 'success');
+      }
     } catch (error) {
       console.error('Failed to add book:', error);
+      showToast('Failed to add book', 'error');
       throw error;
     }
-  }, []);
+  }, [status, showToast]);
 
   const updateBook = useCallback(async (id: number, book: Omit<Book, 'id'>) => {
     try {
       const updatedBook = await api.updateBook(id, book);
       setState(prev => ({
-        books: prev.books.map(b => b.id === id ? updatedBook : b)
+        ...prev,
+        books: prev.books.map(b => b.id === id ? updatedBook : b),
+        isOfflineMode: status !== 'online'
       }));
+      
+      if (status !== 'online') {
+        showToast('Book updated in offline mode', 'info');
+      } else {
+        showToast('Book updated successfully', 'success');
+      }
     } catch (error) {
       console.error('Failed to update book:', error);
+      showToast('Failed to update book', 'error');
       throw error;
     }
-  }, []);
+  }, [status, showToast]);
 
   const deleteBook = useCallback(async (id: number) => {
     try {
       await api.deleteBook(id);
       setState(prev => ({
-        books: prev.books.filter(book => book.id !== id)
+        ...prev,
+        books: prev.books.filter(book => book.id !== id),
+        isOfflineMode: status !== 'online'
       }));
+      
+      if (status !== 'online') {
+        showToast('Book deleted in offline mode', 'info');
+      } else {
+        showToast('Book deleted successfully', 'success');
+      }
     } catch (error) {
       console.error('Failed to delete book:', error);
+      showToast('Failed to delete book', 'error');
       throw error;
     }
-  }, []);
+  }, [status, showToast]);
 
-  // Load books on mount
-  React.useEffect(() => {
+  // Load books on mount and when network status changes
+  useEffect(() => {
     refreshBooks();
-  }, [refreshBooks]);
+  }, [refreshBooks, status]);
 
   // Provide state and functions to children components
   const value: BookContextType = {
@@ -133,16 +147,16 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     updateBook,
     deleteBook,
     refreshBooks,
-  }
+  };
 
-  return <BookContext.Provider value={value}>{children}</BookContext.Provider>
+  return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
 }
 
 // Custom hook for accessing the book context
 export function useBooks() {
-  const context = useContext(BookContext)
+  const context = useContext(BookContext);
   if (context === undefined) {
-    throw new Error("useBooks must be used within a BookProvider")
+    throw new Error("useBooks must be used within a BookProvider");
   }
-  return context
+  return context;
 }
