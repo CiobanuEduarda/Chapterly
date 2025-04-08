@@ -19,6 +19,9 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [filterGenre, setFilterGenre] = useState<string>("");
   const [filterRating, setFilterRating] = useState<number>(0);
+  const [useInfiniteScroll, setUseInfiniteScroll] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [booksPerPage, setBooksPerPage] = useState(5);
   
   // Get unique genres for filter dropdown
   const genres = [...new Set(books.map((book) => book.genre))];
@@ -31,10 +34,10 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
 
   // Load more books when the user scrolls to the bottom
   useEffect(() => {
-    if (inView && !isLoading && pagination.hasMore) {
+    if (useInfiniteScroll && inView && !isLoading && pagination.hasMore) {
       loadMoreBooks();
     }
-  }, [inView, isLoading, pagination.hasMore, loadMoreBooks]);
+  }, [inView, isLoading, pagination.hasMore, loadMoreBooks, useInfiniteScroll]);
 
   // Handle WebSocket updates
   useEffect(() => {
@@ -74,6 +77,13 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
         });
       }
       
+      // Apply pagination if not using infinite scroll
+      if (!useInfiniteScroll) {
+        const startIndex = (currentPage - 1) * booksPerPage;
+        const endIndex = startIndex + booksPerPage;
+        filteredBooks = filteredBooks.slice(startIndex, endIndex);
+      }
+      
       // Update the books state directly in the context
       setFilter(null); // Reset filter to get all books
       setSort(null); // Reset sort to get all books
@@ -81,7 +91,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       // Force a refresh of the books
       refreshBooks();
     }
-  }, [lastMessage, searchTerm, filterGenre, filterRating, sortField, sortDirection, refreshBooks, setFilter, setSort]);
+  }, [lastMessage, searchTerm, filterGenre, filterRating, sortField, sortDirection, refreshBooks, setFilter, setSort, useInfiniteScroll, currentPage, booksPerPage]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,6 +155,33 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     return cheapestBook?.id ?? null;
   }, [books]);
 
+  // Handle page change for pagination mode
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setCurrentPage(newPage);
+      loadMoreBooks();
+    }
+  };
+
+  // Handle books per page change
+  const handleBooksPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newBooksPerPage = parseInt(e.target.value);
+    setBooksPerPage(newBooksPerPage);
+    setCurrentPage(1); // Reset to first page when changing books per page
+    loadMoreBooks();
+  };
+
+  // Apply pagination to the displayed books
+  const displayedBooks = useMemo(() => {
+    if (useInfiniteScroll) {
+      return books;
+    } else {
+      const startIndex = (currentPage - 1) * booksPerPage;
+      const endIndex = startIndex + booksPerPage;
+      return books.slice(startIndex, endIndex);
+    }
+  }, [books, useInfiniteScroll, currentPage, booksPerPage]);
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#89A593] p-8">
       <h1 className="text-3xl font-bold bg-[#52796F] p-6 rounded-md shadow-md text-center text-[#042405]">
@@ -196,6 +233,38 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
               <option value={5}>5 Stars</option>
             </select>
           </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="infiniteScroll"
+                checked={useInfiniteScroll}
+                onChange={(e) => setUseInfiniteScroll(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="infiniteScroll" className="text-lg font-semibold text-[#042405]">
+                Use Infinite Scroll
+              </label>
+            </div>
+
+            {!useInfiniteScroll && (
+              <div className="flex items-center">
+                <label htmlFor="booksPerPage" className="text-lg font-semibold text-[#042405] mr-2">
+                  Books per page:
+                </label>
+                <select
+                  id="booksPerPage"
+                  value={booksPerPage}
+                  onChange={handleBooksPerPageChange}
+                  className="p-2 border border-black rounded-md"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                </select>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -223,8 +292,8 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
             </tr>
           </thead>
           <tbody>
-            {books.length > 0 ? (
-              books.map((book) => (
+            {displayedBooks.length > 0 ? (
+              displayedBooks.map((book) => (
                 <tr
                   key={book.id}
                   className={`border-b border-gray-300 hover:bg-[#C76E77]/20 
@@ -282,18 +351,48 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
           </tbody>
         </table>
 
-        {/* Loading indicator and intersection observer target */}
-        <div ref={ref} className="h-10 flex items-center justify-center my-4">
-          {isLoading && (
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
-          )}
-          {!isLoading && pagination.hasMore && (
-            <div className="text-sm text-gray-500">Scroll for more books...</div>
-          )}
-          {!isLoading && !pagination.hasMore && books.length > 0 && (
-            <div className="text-sm text-gray-500">No more books to load</div>
-          )}
-        </div>
+        {/* Loading indicator and pagination */}
+        {useInfiniteScroll ? (
+          <div ref={ref} className="h-10 flex items-center justify-center my-4">
+            {isLoading && (
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+            )}
+            {!isLoading && pagination.hasMore && (
+              <div className="text-sm text-gray-500">Scroll for more books...</div>
+            )}
+            {!isLoading && !pagination.hasMore && books.length > 0 && (
+              <div className="text-sm text-gray-500">No more books to load</div>
+            )}
+          </div>
+        ) : (
+          <div className="flex justify-center items-center gap-4 my-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-md ${
+                currentPage === 1
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-[#52796F] text-white hover:bg-[#3D5A4C]'
+              }`}
+            >
+              Previous
+            </button>
+            <span className="text-[#042405]">
+              Page {currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage >= pagination.totalPages}
+              className={`px-4 py-2 rounded-md ${
+                currentPage >= pagination.totalPages
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-[#52796F] text-white hover:bg-[#3D5A4C]'
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

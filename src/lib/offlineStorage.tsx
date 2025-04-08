@@ -124,5 +124,27 @@ export const offlineStorage={
     this.saveBooks(books);
     return books;
   },
+
+  addBook(book: Omit<Book, 'id'>): Book {
+    const books = this.getBooks();
+    const newBook: Book = {
+        ...book,
+        id: Date.now(), // Use timestamp as temporary ID
+    };
+    books.push(newBook);
+    this.saveBooks(books);
+    return newBook;
+  },
+
+  updateBook(id: number, book: Omit<Book, 'id'>): Book {
+    const books = this.getBooks();
+    const updatedBook: Book = {
+        ...book,
+        id,
+    };
+    const updatedBooks = books.map(b => b.id === id ? updatedBook : b);
+    this.saveBooks(updatedBooks);
+    return updatedBook;
+  },
 };
        
