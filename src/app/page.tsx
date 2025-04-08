@@ -60,6 +60,10 @@ export default function HomePage() {
         <Link href="chart">
         <button className="w-48 h-12 bg-[#C76E77] text-[#042405] font-bold text-lg shadow-md rounded-md border border-black">Analytics</button>
         </Link> {/* chart button */}
+        <Link href="files">
+        <button className="w-48 h-12 bg-[#C76E77] text-[#042405] font-bold text-lg shadow-md rounded-md border border-black">File Management</button>
+        </Link> {/* chart button */}
+
           
        
       </div>
