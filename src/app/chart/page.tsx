@@ -314,4 +314,3 @@ function LineChart({ data }: { data: { priceRange: string; count: number }[] }) 
     </g>
   )
 }
-

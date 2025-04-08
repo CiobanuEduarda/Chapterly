@@ -1,8 +1,9 @@
 "use client"
-import { createContext, useContext, useReducer, type ReactNode } from "react"
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { api } from './api';
 
 // Define the structure of a Book object
-export type Book = {
+export interface Book {
   id: number
   title: string
   author: string
@@ -12,7 +13,7 @@ export type Book = {
 }
 
 // Define the structure of the global book state
-type BookState = {
+interface BookState {
   books: Book[]
 }
 
@@ -23,11 +24,12 @@ type BookAction =
   | { type: "DELETE_BOOK"; payload: number } // Deletes a book by ID
 
 // Define the context type, including state and action functions
-type BookContextType = {
+interface BookContextType {
   state: BookState
-  addBook: (book: Omit<Book, "id">) => void
-  updateBook: (book: Book) => void
-  deleteBook: (id: number) => void
+  addBook: (book: Omit<Book, 'id'>) => Promise<void>
+  updateBook: (id: number, book: Omit<Book, 'id'>) => Promise<void>
+  deleteBook: (id: number) => Promise<void>
+  refreshBooks: () => Promise<void>
 }
 
 // Initial state with some sample books
@@ -37,17 +39,11 @@ const initialState: BookState = {
     { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee", genre: "Fiction", price: 9, rating: 5 },
     { id: 3, title: "1984", author: "George Orwell", genre: "Dystopian", price: 9.99, rating: 4 },
     { id: 4, title: "Pride and Prejudice", author: "Jane Austen", genre: "Romance", price: 5.22, rating: 3 },
-   
   ],
 }
 
 // Create a React context to provide global state management
-const BookContext = createContext<BookContextType>({
-  state: initialState,
-  addBook: () => {},
-  updateBook: () => {},
-  deleteBook: () => {},
-})
+const BookContext = createContext<BookContextType | undefined>(undefined);
 
 // Reducer function to handle different actions and update the state
 function bookReducer(state: BookState, action: BookAction): BookState {
@@ -79,30 +75,64 @@ function bookReducer(state: BookState, action: BookAction): BookState {
 }
 
 // Provider component that wraps the application and provides the book context
-export function BookProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(bookReducer, initialState)
+export function BookProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<BookState>({ books: [] });
 
-  // Function to add a new book
-  const addBook = (book: Omit<Book, "id">) => {
-    dispatch({ type: "ADD_BOOK", payload: book })
-  }
+  const refreshBooks = useCallback(async () => {
+    try {
+      const books = await api.getBooks();
+      setState({ books });
+    } catch (error) {
+      console.error('Failed to fetch books:', error);
+    }
+  }, []);
 
-  // Function to update an existing book
-  const updateBook = (book: Book) => {
-    dispatch({ type: "UPDATE_BOOK", payload: book })
-  }
+  const addBook = useCallback(async (book: Omit<Book, 'id'>) => {
+    try {
+      const newBook = await api.addBook(book);
+      setState(prev => ({ books: [...prev.books, newBook] }));
+    } catch (error) {
+      console.error('Failed to add book:', error);
+      throw error;
+    }
+  }, []);
 
-  // Function to delete a book by ID
-  const deleteBook = (id: number) => {
-    dispatch({ type: "DELETE_BOOK", payload: id })
-  }
+  const updateBook = useCallback(async (id: number, book: Omit<Book, 'id'>) => {
+    try {
+      const updatedBook = await api.updateBook(id, book);
+      setState(prev => ({
+        books: prev.books.map(b => b.id === id ? updatedBook : b)
+      }));
+    } catch (error) {
+      console.error('Failed to update book:', error);
+      throw error;
+    }
+  }, []);
+
+  const deleteBook = useCallback(async (id: number) => {
+    try {
+      await api.deleteBook(id);
+      setState(prev => ({
+        books: prev.books.filter(book => book.id !== id)
+      }));
+    } catch (error) {
+      console.error('Failed to delete book:', error);
+      throw error;
+    }
+  }, []);
+
+  // Load books on mount
+  React.useEffect(() => {
+    refreshBooks();
+  }, [refreshBooks]);
 
   // Provide state and functions to children components
-  const value = {
+  const value: BookContextType = {
     state,
     addBook,
     updateBook,
     deleteBook,
+    refreshBooks,
   }
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>
@@ -111,7 +141,7 @@ export function BookProvider({ children }: { children: ReactNode }) {
 // Custom hook for accessing the book context
 export function useBooks() {
   const context = useContext(BookContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useBooks must be used within a BookProvider")
   }
   return context
