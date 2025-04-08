@@ -1,9 +1,13 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { body, validationResult, param, query } from 'express-validator';
+import { WebSocketServer } from 'ws';
+import { createServer } from 'http';
 import { Book } from './types';
 
 const app = express();
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
 const port = 3001;
 
 // In-memory storage
@@ -32,6 +36,46 @@ const validatePagination = [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100')
 ];
+
+// WebSocket connection handling
+wss.on('connection', (ws) => {
+  console.log('New client connected');
+  
+  // Send initial books data
+  ws.send(JSON.stringify({ type: 'books', data: books }));
+  
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
+
+// Broadcast function to send updates to all connected clients
+const broadcast = (data: any) => {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+};
+
+// Background thread for generating new books
+const generateNewBook = () => {
+  const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Science Fiction', 'Romance'];
+  const newBook: Book = {
+    id: books.length + 1,
+    title: `Generated Book ${books.length + 1}`,
+    author: `Author ${Math.floor(Math.random() * 100)}`,
+    genre: genres[Math.floor(Math.random() * genres.length)],
+    price: Math.floor(Math.random() * 100) + 10,
+    rating: Math.floor(Math.random() * 5) + 1
+  };
+  
+  books.push(newBook);
+  broadcast({ type: 'books', data: books });
+};
+
+// Generate a new book every 30 seconds
+setInterval(generateNewBook, 30000);
 
 // Routes
 app.get('/api/books', validatePagination, (req: Request, res: Response) => {
@@ -130,10 +174,11 @@ app.delete('/api/books/:id', validateId, (req: Request, res: Response) => {
   res.status(204).send();
 });
 
-// Start server
+// Start the server
 if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+  const PORT = process.env.PORT || 3001;
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
 }
 

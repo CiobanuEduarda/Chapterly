@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useBooks } from '../lib/bookContext';
 import { Book } from '../lib/bookContext';
 import { useInView } from 'react-intersection-observer';
+import { useWebSocket } from '../lib/websocketContext';
 
 interface BookListProps {
   onBookClick?: (book: Book) => void;
@@ -12,6 +13,7 @@ interface BookListProps {
 export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   const { state, loadMoreBooks, setFilter, setSort } = useBooks();
   const { books, isLoading, isOfflineMode, pagination } = state;
+  const { isConnected, lastMessage } = useWebSocket();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<string>("title");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -33,6 +35,14 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       loadMoreBooks();
     }
   }, [inView, isLoading, pagination.hasMore, loadMoreBooks]);
+
+  // Handle WebSocket updates
+  useEffect(() => {
+    if (lastMessage?.type === 'books') {
+      // Update the books list with the new data
+      loadMoreBooks();
+    }
+  }, [lastMessage, loadMoreBooks]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +111,11 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       <h1 className="text-3xl font-bold bg-[#52796F] p-6 rounded-md shadow-md text-center text-[#042405]">
         Book Shelf
       </h1>
+
+      {/* Connection Status */}
+      <div className={`text-center p-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'} text-white rounded-md mt-4`}>
+        {isConnected ? 'Connected to Real-Time Updates' : 'Disconnected - Updates may be delayed'}
+      </div>
 
       {/* Filtering and Search */}
       <div className="bg-[#E1A591] p-6 rounded-md shadow-md mt-6">

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useCharts } from "../../lib/chartContext"
 import { useBooks, type Book } from "../../lib/bookContext"
+import { useWebSocket } from '../../lib/websocketContext';
 
 // Add this function before the Dashboard component
 function generateRandomBook(): Omit<Book, "id"> {
@@ -28,10 +29,75 @@ function generateRandomBook(): Omit<Book, "id"> {
   }
 }
 
+// Data processing functions
+const processGenreData = (books: Book[]) => {
+  const genreCounts = books.reduce((acc, book) => {
+    acc[book.genre] = (acc[book.genre] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return {
+    labels: Object.keys(genreCounts),
+    datasets: [{
+      data: Object.values(genreCounts),
+      backgroundColor: [
+        '#FF6384',
+        '#36A2EB',
+        '#FFCE56',
+        '#4BC0C0',
+        '#9966FF'
+      ]
+    }]
+  };
+};
+
+const processRatingData = (books: Book[]) => {
+  const ratingCounts = books.reduce((acc, book) => {
+    acc[book.rating] = (acc[book.rating] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+
+  return {
+    labels: Object.keys(ratingCounts).map(rating => `${rating} Stars`),
+    datasets: [{
+      data: Object.values(ratingCounts),
+      backgroundColor: '#36A2EB'
+    }]
+  };
+};
+
+const processPriceData = (books: Book[]) => {
+  const priceRanges = {
+    '0-20': 0,
+    '21-40': 0,
+    '41-60': 0,
+    '61-80': 0,
+    '81+': 0
+  };
+
+  books.forEach(book => {
+    if (book.price <= 20) priceRanges['0-20']++;
+    else if (book.price <= 40) priceRanges['21-40']++;
+    else if (book.price <= 60) priceRanges['41-60']++;
+    else if (book.price <= 80) priceRanges['61-80']++;
+    else priceRanges['81+']++;
+  });
+
+  return {
+    labels: Object.keys(priceRanges),
+    datasets: [{
+      data: Object.values(priceRanges),
+      backgroundColor: '#FF6384'
+    }]
+  };
+};
+
 export default function Dashboard() {
   const { genreData, ratingData, priceData, isLoading, refreshChartData } = useCharts()
   const { state, addBook } = useBooks()
+  const { isConnected, lastMessage } = useWebSocket()
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [chartData, setChartData] = useState<any>(null)
 
   // Add this useEffect for periodic book addition
   useEffect(() => {
@@ -50,6 +116,22 @@ export default function Dashboard() {
     }
   }, [isLoading])
 
+  // Update chart data when books change or WebSocket message received
+  useEffect(() => {
+    if (lastMessage?.type === 'books' || state.books.length > 0) {
+      // Process books data for charts
+      const genreData = processGenreData(state.books)
+      const ratingData = processRatingData(state.books)
+      const priceData = processPriceData(state.books)
+
+      setChartData({
+        genreData,
+        ratingData,
+        priceData
+      })
+    }
+  }, [state.books, lastMessage])
+
   // Format time for display
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
@@ -60,6 +142,11 @@ export default function Dashboard() {
       <h1 className="text-3xl font-bold bg-[#52796F] p-6 rounded-md shadow-md text-center text-[#042405]">
         Book Analytics Dashboard
       </h1>
+
+      {/* Connection Status */}
+      <div className={`text-center p-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'} text-white rounded-md mt-4`}>
+        {isConnected ? 'Connected to Real-Time Updates' : 'Disconnected - Updates may be delayed'}
+      </div>
 
       <div className="bg-[#E1A591] p-6 rounded-md shadow-md mt-6 flex justify-between items-center">
         <div>
