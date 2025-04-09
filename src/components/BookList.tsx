@@ -287,30 +287,8 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
               </div>
             )}
             
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="autoRefresh"
-                checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor="autoRefresh" className="text-lg font-semibold text-[#042405] mr-2">
-                Auto Refresh
-              </label>
-              {autoRefresh && (
-                <select
-                  value={refreshInterval}
-                  onChange={(e) => setRefreshInterval(Number(e.target.value))}
-                  className="p-2 border border-black rounded-md"
-                >
-                  <option value={5}>Every 5s</option>
-                  <option value={10}>Every 10s</option>
-                  <option value={30}>Every 30s</option>
-                  <option value={60}>Every 1m</option>
-                </select>
-              )}
-            </div>
+            
+          
           </div>
         </div>
       </div>

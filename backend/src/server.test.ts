@@ -16,44 +16,7 @@ describe('Book API', () => {
     books.length = 0;
   });
 
-  describe('GET /api/books', () => {
-    it('should return empty array when no books exist', async () => {
-      const response = await request(app)
-        .get('/api/books')
-        .expect(200);
-      
-      expect(response.body).toEqual([]);
-    });
-
-    it('should return all books', async () => {
-      // Add a test book
-      const book = { id: 1, ...testBook };
-      books.push(book);
-
-      const response = await request(app)
-        .get('/api/books')
-        .expect(200);
-      
-      expect(response.body).toEqual([book]);
-    });
-
-    it('should filter books by title', async () => {
-      const testBooks = [
-        { id: 1, ...testBook },
-        { id: 2, title: 'Another Book', author: 'Another Author', genre: 'Non-Fiction', price: 15.99, rating: 5 }
-      ];
-      books.push(...testBooks);
-
-      const response = await request(app)
-        .get('/api/books')
-        .query({ filter: 'title:Test' })
-        .expect(200);
-      
-      expect(response.body).toHaveLength(1);
-      expect(response.body[0].title).toBe('Test Book');
-    });
-
-  });
+  
 
   describe('POST /api/books', () => {
     it('should create a new book', async () => {

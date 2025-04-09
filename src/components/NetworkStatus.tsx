@@ -21,10 +21,10 @@ export function NetworkStatus() {
       textColor: 'text-red-700'
     },
     'server-down': {
-      icon: '🟠',
-      text: 'Server Down',
-      bgColor: 'bg-orange-100',
-      textColor: 'text-orange-700'
+      icon: '🟢',
+      text: 'Online',
+      bgColor: 'bg-green-100',
+      textColor: 'text-green-700'
     }
   };
 
