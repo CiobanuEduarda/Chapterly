@@ -22,9 +22,16 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   const [useInfiniteScroll, setUseInfiniteScroll] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(5);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [refreshInterval, setRefreshInterval] = useState(5); // seconds
   
   // Get unique genres for filter dropdown
-  const genres = [...new Set(books.map((book) => book.genre))];
+  const genres = useMemo(() => {
+    if (!books || books.length === 0) {
+      return [];
+    }
+    return [...new Set(books.map((book) => book.genre))];
+  }, [books]);
   
   // Use react-intersection-observer to detect when the user scrolls to the bottom
   const { ref, inView } = useInView({
@@ -92,6 +99,17 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       refreshBooks();
     }
   }, [lastMessage, searchTerm, filterGenre, filterRating, sortField, sortDirection, refreshBooks, setFilter, setSort, useInfiniteScroll, currentPage, booksPerPage]);
+
+  // Auto-refresh functionality
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const intervalId = setInterval(() => {
+      refreshBooks();
+    }, refreshInterval * 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [autoRefresh, refreshInterval, refreshBooks]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,6 +191,10 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
 
   // Apply pagination to the displayed books
   const displayedBooks = useMemo(() => {
+    if (!books || books.length === 0) {
+      return [];
+    }
+    
     if (useInfiniteScroll) {
       return books;
     } else {
@@ -264,6 +286,31 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
                 </select>
               </div>
             )}
+            
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="autoRefresh"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="autoRefresh" className="text-lg font-semibold text-[#042405] mr-2">
+                Auto Refresh
+              </label>
+              {autoRefresh && (
+                <select
+                  value={refreshInterval}
+                  onChange={(e) => setRefreshInterval(Number(e.target.value))}
+                  className="p-2 border border-black rounded-md"
+                >
+                  <option value={5}>Every 5s</option>
+                  <option value={10}>Every 10s</option>
+                  <option value={30}>Every 30s</option>
+                  <option value={60}>Every 1m</option>
+                </select>
+              )}
+            </div>
           </div>
         </div>
       </div>

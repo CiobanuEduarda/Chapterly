@@ -12,7 +12,7 @@ const WebSocketContext = createContext<WebSocketContextType>({
 });
 
 const INITIAL_RETRY_DELAY = 1000; // 1 second
-const MAX_RETRY_DELAY = 30000; // 30 seconds
+const MAX_RETRY_DELAY = 10000; // 30 seconds
 const RETRY_BACKOFF_FACTOR = 1.5;
 
 // WebSocket configuration
