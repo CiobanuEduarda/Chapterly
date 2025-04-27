@@ -1,17 +1,18 @@
 "use client"
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useBooks } from '../lib/bookContext';
 import { Book } from '../lib/bookContext';
 import { useInView } from 'react-intersection-observer';
 import { useWebSocket } from '../lib/websocketContext';
+import { useRouter } from 'next/navigation';
 
 interface BookListProps {
   onBookClick?: (book: Book) => void;
-  onDeleteClick?: (id: number) => void;
+  onDeleteClick?: (id: number, title: string) => void;
 }
 
 export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
-  const { state, loadMoreBooks, setFilter, setSort, refreshBooks } = useBooks();
+  const { state, loadMoreBooks, setFilter, setSort, refreshBooks, addBook, deleteBook } = useBooks();
   const { books, isLoading, isOfflineMode, pagination } = state;
   const { isConnected, lastMessage } = useWebSocket();
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +25,9 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   const [booksPerPage, setBooksPerPage] = useState(5);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(5); // seconds
+  const [autoGenerate, setAutoGenerate] = useState(false);
+  const [autoGenerateInterval, setAutoGenerateInterval] = useState(1); // seconds
+  const router = useRouter();
   
   // Get unique genres for filter dropdown
   const genres = useMemo(() => {
@@ -110,6 +114,44 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     
     return () => clearInterval(intervalId);
   }, [autoRefresh, refreshInterval, refreshBooks]);
+
+  // Function to generate a random book
+  const generateRandomBook = useCallback(async () => {
+    if (!autoGenerate) return;
+    
+    // Define genres as a string array
+    const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Science Fiction', 'Romance', 'Fantasy', 'Thriller', 'Biography'];
+    
+    // Create a new book with explicit type
+    const newBook: Omit<Book, 'id'> = {
+      title: `Generated Book ${Date.now()}`,
+      author: `Author ${Math.floor(Math.random() * 100)}`,
+      genre: genres[Math.floor(Math.random() * genres.length)] || 'Fiction', // Fallback to 'Fiction' if undefined
+      price: Math.floor(Math.random() * 100) + 10,
+      rating: Math.floor(Math.random() * 5) + 1
+    };
+    
+    try {
+      await addBook(newBook);
+    } catch (error) {
+      console.error('Error generating book:', error);
+    }
+  }, [autoGenerate, addBook]);
+  
+  // Set up auto-generation interval
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    if (autoGenerate) {
+      intervalId = setInterval(generateRandomBook, autoGenerateInterval * 1000);
+    }
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [autoGenerate, autoGenerateInterval, generateRandomBook]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,11 +246,52 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     }
   }, [books, useInfiniteScroll, currentPage, booksPerPage]);
 
+  // Handle book click - navigate to update page
+  const handleBookClick = (book: Book) => {
+    if (onBookClick) {
+      onBookClick(book);
+    } else {
+      router.push(`/update/${book.id}`);
+    }
+  };
+  
+  // Handle delete click
+  const handleDeleteClick = (id: number) => {
+    if (onDeleteClick) {
+      const book = books.find(b => b.id === id);
+      if (book) {
+        onDeleteClick(id, book.title);
+      }
+    } else {
+      // If no onDeleteClick handler is provided, use the deleteBook function from useBooks
+      if (window.confirm('Are you sure you want to delete this book?')) {
+        deleteBook(id)
+          .then(() => {
+            // Refresh the book list after deletion
+            refreshBooks();
+          })
+          .catch(error => {
+            console.error('Error deleting book:', error);
+            alert('Failed to delete book. Please try again.');
+          });
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#89A593] p-8">
-      <h1 className="text-3xl font-bold bg-[#52796F] p-6 rounded-md shadow-md text-center text-[#042405]">
-        Book Shelf
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={() => router.push('/')}
+          className="bg-[#52796F] text-white px-4 py-2 rounded-md hover:bg-[#3A5A40] transition-colors"
+        >
+          Back to Home
+        </button>
+        <h1 className="text-3xl font-bold bg-[#52796F] p-6 rounded-md shadow-md text-center text-[#042405]">
+          Book Shelf
+        </h1>
+        <div className="w-24"></div> {/* Spacer to balance the layout */}
+      </div>
 
       {/* Filtering and Search */}
       <div className="bg-[#E1A591] p-6 rounded-md shadow-md mt-6">
@@ -255,62 +338,55 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
               <option value={5}>5 Stars</option>
             </select>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="infiniteScroll"
-                checked={useInfiniteScroll}
-                onChange={(e) => setUseInfiniteScroll(e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor="infiniteScroll" className="text-lg font-semibold text-[#042405]">
-                Use Infinite Scroll
-              </label>
-            </div>
-
-            {!useInfiniteScroll && (
-              <div className="flex items-center">
-                <label htmlFor="booksPerPage" className="text-lg font-semibold text-[#042405] mr-2">
-                  Books per page:
-                </label>
-                <select
-                  id="booksPerPage"
-                  value={booksPerPage}
-                  onChange={handleBooksPerPageChange}
-                  className="p-2 border border-black rounded-md"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                </select>
-              </div>
+          
+          {/* Auto-generation controls */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="autoGenerate"
+              checked={autoGenerate}
+              onChange={(e) => setAutoGenerate(e.target.checked)}
+              className="mr-2"
+            />
+            <label htmlFor="autoGenerate" className="text-lg font-semibold text-[#042405] mr-2">
+              Auto Generate Books
+            </label>
+            {autoGenerate && (
+              <select
+                value={autoGenerateInterval}
+                onChange={(e) => setAutoGenerateInterval(Number(e.target.value))}
+                className="p-2 border border-black rounded-md"
+              >
+                <option value={1}>Every 1s</option>
+                <option value={10}>Every 10s</option>
+                <option value={30}>Every 3m</option>
+                <option value={300}>Every 5m</option>
+              </select>
             )}
-            
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="autoRefresh"
-                checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor="autoRefresh" className="text-lg font-semibold text-[#042405] mr-2">
-                Auto Refresh
-              </label>
-              {autoRefresh && (
-                <select
-                  value={refreshInterval}
-                  onChange={(e) => setRefreshInterval(Number(e.target.value))}
-                  className="p-2 border border-black rounded-md"
-                >
-                  <option value={5}>Every 5s</option>
-                  <option value={10}>Every 10s</option>
-                  <option value={30}>Every 30s</option>
-                  <option value={60}>Every 1m</option>
-                </select>
-              )}
-            </div>
+          </div>
+          
+          {/* Infinite scroll toggle */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="infiniteScroll"
+              checked={useInfiniteScroll}
+              onChange={(e) => setUseInfiniteScroll(e.target.checked)}
+              className="mr-2"
+            />
+            <label htmlFor="infiniteScroll" className="text-lg font-semibold text-[#042405] mr-2">
+              Use Infinite Scroll
+            </label>
+            {!useInfiniteScroll && (
+              <select
+                value={booksPerPage}
+                onChange={handleBooksPerPageChange}
+                className="p-2 border border-black rounded-md"
+              >
+                <option value={5}>5 books per page</option>
+                <option value={10}>10 books per page</option>
+              </select>
+            )}
           </div>
         </div>
       </div>
@@ -353,7 +429,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
                   <td className="p-3">{book.author}</td>
                   <td className="p-3">{book.genre}</td>
                   <td className="p-3">
-                    ${book.price.toFixed(2)}
+                    ${book.price}
                     {book.id === cheapestBookId && (
                       <span className="ml-2 text-xs font-bold text-[#52796F] bg-white px-1 py-0.5 rounded">
                         BEST PRICE
@@ -373,14 +449,14 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
                   <td className="p-3">
                     <div className="flex space-x-2">
                       <button
-                        className="px-2 py-1 bg-[#52796F] text-white rounded-md"
-                        onClick={() => onBookClick?.(book)}
+                        className="px-2 py-1 bg-[#52796F] text-white rounded-md hover:bg-[#3A5A40]"
+                        onClick={() => handleBookClick(book)}
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => onDeleteClick?.(book.id)}
-                        className="px-2 py-1 bg-[#C76E77] text-white rounded-md"
+                        onClick={() => handleDeleteClick(book.id)}
+                        className="px-2 py-1 bg-[#C76E77] text-white rounded-md hover:bg-[#A55A61]"
                       >
                         Delete
                       </button>

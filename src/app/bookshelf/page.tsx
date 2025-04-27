@@ -23,22 +23,23 @@ export default function BookShelf() {
   }
 
   // Handle delete confirmation
-  const confirmDelete = (id: number) => {
-    const book = bookToDelete ? { id: bookToDelete, title: bookToDeleteTitle } : null
-    if (book) {
-      setBookToDelete(id)
-      setBookToDeleteTitle(book.title)
-      setShowConfirmDelete(true)
-    }
+  const confirmDelete = (id: number, title: string) => {
+    setBookToDelete(id)
+    setBookToDeleteTitle(title)
+    setShowConfirmDelete(true)
   }
 
   // Handle delete book
-  const handleDeleteBook = () => {
+  const handleDeleteBook = async () => {
     if (bookToDelete !== null) {
-      deleteBook(bookToDelete)
-      setShowConfirmDelete(false)
-      setBookToDelete(null)
-      showToast(`"${bookToDeleteTitle}" has been deleted`, "success")
+      try {
+        await deleteBook(bookToDelete)
+        setShowConfirmDelete(false)
+        setBookToDelete(null)
+        showToast(`"${bookToDeleteTitle}" has been deleted`, "success")
+      } catch (error) {
+        showToast("Failed to delete book", "error")
+      }
     }
   }
 

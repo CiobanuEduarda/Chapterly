@@ -127,28 +127,20 @@ export default function EditBook() {
           {errors.rating && <p className="text-red-500 mt-1">{errors.rating}</p>}
         </div>
 
-        <div className="flex flex-wrap justify-center mt-10">
-          {notebooks.map((notebook, index) => (
-            <div key={index} className="m-6 min-w-[10em] max-w-[25%]">
-              <div
-                className={`relative h-64 w-44 rounded-lg shadow-lg transform transition-transform hover:-rotate-6 ${notebook.color}`}
-              >
-                <div className="absolute inset-0 flex items-center justify-center text-white font-bold">
-                  {notebook.label}
-                </div>
-                <div className="absolute inset-0 bg-white rounded-lg opacity-10"></div>
-              </div>
-              <h4 className="mt-4 text-lg font-semibold"></h4>
-              {/* Input Field */}
+        {/* Form Fields */}
+        <div className="mt-8 flex flex-col items-center space-y-6">
+          {notebooks.map(({ color, label, value, setValue }) => (
+            <div key={label} className="w-full max-w-md">
+              <label className="text-lg font-semibold text-[#042405]">{label}</label>
               <input
-                type="text"
-                value={notebook.value}
-                onChange={(e) => notebook.setValue(e.target.value)}
-                placeholder={`Enter ${notebook.label.toLowerCase()}`}
-                className={`mt-3 w-40 p-1 border ${errors[notebook.label.toLowerCase()] ? "border-red-500" : "border-[#2D2D2D]"} rounded-md text-center text-[#2D2D2D] outline-none focus:ring-2 focus:ring-[#5F7764]`}
+                type={label === "Price" ? "number" : "text"}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder={`Enter ${label.toLowerCase()}`}
+                className={`w-full p-3 mt-2 border border-black rounded-md ${color} text-[#042405] focus:outline-none focus:ring-2 focus:ring-[#52796F]`}
               />
-              {errors[notebook.label.toLowerCase()] && (
-                <p className="text-red-500 text-sm mt-1">{errors[notebook.label.toLowerCase()]}</p>
+              {errors[label.toLowerCase()] && (
+                <p className="text-red-500 mt-1">{errors[label.toLowerCase()]}</p>
               )}
             </div>
           ))}

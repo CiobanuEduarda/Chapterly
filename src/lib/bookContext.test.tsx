@@ -136,14 +136,16 @@ describe('BookContext CRUD Operations', () => {
 
     // Try to update a book with invalid data
     act(() => {
-      result.current.updateBook({
-        id: -1, // Invalid ID
-        title: "",
-        author: "",
-        genre: "",
-        price: -1,
-        rating: -1,
-      })
+      result.current.updateBook(
+        -1, // Invalid ID
+        {
+          title: "",
+          author: "",
+          genre: "",
+          price: -1,
+          rating: -1,
+        }
+      )
     })
 
     // Should maintain the same state

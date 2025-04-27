@@ -34,7 +34,7 @@ interface BookContextType {
   state: BookState
   addBook: (book: Omit<Book, 'id'>) => Promise<Book>
   updateBook: (id: number, book: Omit<Book, 'id'>) => Promise<Book>
-  deleteBook: (id: number) => Promise<void>
+  deleteBook: (id: number) => Promise<boolean>
   refreshBooks: () => Promise<void>
   loadMoreBooks: () => Promise<void>
   setFilter: (filter: string | null) => void
@@ -48,13 +48,13 @@ const BookContext = createContext<BookContextType | undefined>(undefined);
 export function BookProvider({ children }: { children: React.ReactNode }) {
   const { status } = useNetwork();
   const { showToast } = useToast();
-  const [state, setState] = useState<BookState>({ 
-    books: [], 
-    isLoading: true,
+  const [state, setState] = useState<BookState>({
+    books: [],
+    isLoading: false,
     isOfflineMode: false,
     pagination: {
       page: 1,
-      limit: 20,
+      limit: 10,
       total: 0,
       totalPages: 0,
       hasMore: false
@@ -139,68 +139,86 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.isLoading, state.pagination, filter, sort, showToast]);
 
-  const addBook = useCallback(async (book: Omit<Book, 'id'>) => {
+  const addBook = useCallback(async (book: Omit<Book, 'id'>): Promise<Book> => {
     try {
-      const newBook = await api.addBook(book);
-      setState(prev => ({ 
-        ...prev,
-        books: [...prev.books, newBook],
-        isOfflineMode: status !== 'online'
-      }));
-      
-      if (status !== 'online') {
-        showToast('Book added in offline mode', 'info');
-      } else {
-        showToast('Book added successfully', 'success');
-      }
-    } catch (error) {
-      console.error('Failed to add book:', error);
-      showToast('Failed to add book', 'error');
-      throw error;
-    }
-  }, [status, showToast]);
+      const response = await fetch('http://localhost:3001/api/books', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(book),
+      });
 
-  const updateBook = useCallback(async (id: number, book: Omit<Book, 'id'>) => {
-    try {
-      const updatedBook = await api.updateBook(id, book);
+      if (!response.ok) {
+        throw new Error('Failed to add book');
+      }
+
+      const newBook = await response.json();
+
+      // Update local state
       setState(prev => ({
         ...prev,
-        books: prev.books.map(b => b.id === id ? updatedBook : b),
-        isOfflineMode: status !== 'online'
+        books: [...prev.books, newBook]
       }));
-      
-      if (status !== 'online') {
-        showToast('Book updated in offline mode', 'info');
-      } else {
-        showToast('Book updated successfully', 'success');
-      }
+
+      return newBook;
     } catch (error) {
-      console.error('Failed to update book:', error);
-      showToast('Failed to update book', 'error');
+      console.error('Error adding book:', error);
       throw error;
     }
-  }, [status, showToast]);
+  }, []);
 
-  const deleteBook = useCallback(async (id: number) => {
+  const deleteBook = useCallback(async (id: number): Promise<boolean> => {
     try {
-      await api.deleteBook(id);
+      const response = await fetch(`http://localhost:3001/api/books/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete book');
+      }
+
+      // Update local state
       setState(prev => ({
         ...prev,
-        books: prev.books.filter(book => book.id !== id),
-        isOfflineMode: status !== 'online'
+        books: prev.books.filter(book => book.id !== id)
       }));
-      
-      if (status !== 'online') {
-        showToast('Book deleted in offline mode', 'info');
-      } else {
-        showToast('Book deleted successfully', 'success');
-      }
+
+      return true;
     } catch (error) {
-      console.error('Failed to delete book:', error);
-      showToast('Failed to delete book', 'error');
+      console.error('Error deleting book:', error);
       throw error;
     }
-  }, [status, showToast]);
+  }, []);
+
+  const updateBook = useCallback(async (id: number, book: Omit<Book, 'id'>): Promise<Book> => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/books/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(book),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update book');
+      }
+
+      const updatedBook = await response.json();
+
+      // Update local state
+      setState(prev => ({
+        ...prev,
+        books: prev.books.map(b => b.id === id ? updatedBook : b)
+      }));
+
+      return updatedBook;
+    } catch (error) {
+      console.error('Error updating book:', error);
+      throw error;
+    }
+  }, []);
 
   // Load books on mount and when network status, filter, or sort changes
   useEffect(() => {
