@@ -71,8 +71,7 @@ export default function EditBook() {
     e.preventDefault()
 
     if (validateForm()) {
-      const updatedBook: Book = {
-        id: bookId,
+      const updatedBook: Omit<Book, 'id'> = {
         title,
         author,
         genre,
@@ -80,7 +79,7 @@ export default function EditBook() {
         rating,
       }
 
-      updateBook(updatedBook)
+      updateBook(bookId, updatedBook)
       showToast(`"${title}" has been updated`, "success")
       router.push("/bookshelf")
     }
