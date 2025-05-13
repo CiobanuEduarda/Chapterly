@@ -1,0 +1,50 @@
+{
+  "Get Book Statistics" : {
+    "transaction" : "Get Book Statistics",
+    "sampleCount" : 1000,
+    "errorCount" : 1000,
+    "errorPct" : 100.0,
+    "meanResTime" : 2091.0119999999997,
+    "medianResTime" : 2003.0,
+    "minResTime" : 2001.0,
+    "maxResTime" : 8922.0,
+    "pct1ResTime" : 2005.0,
+    "pct2ResTime" : 2009.0,
+    "pct3ResTime" : 6511.150000000001,
+    "throughput" : 10.966355222178356,
+    "receivedKBytesPerSec" : 3.5233699883756633,
+    "sentKBytesPerSec" : 1.4029223965872701
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 2000,
+    "errorCount" : 1000,
+    "errorPct" : 50.0,
+    "meanResTime" : 4410.113000000001,
+    "medianResTime" : 5835.5,
+    "minResTime" : 2001.0,
+    "maxResTime" : 8922.0,
+    "pct1ResTime" : 7053.9,
+    "pct2ResTime" : 7263.0,
+    "pct3ResTime" : 7594.98,
+    "throughput" : 20.68059849652049,
+    "receivedKBytesPerSec" : 52.42200506157648,
+    "sentKBytesPerSec" : 2.7466419878191273
+  },
+  "Get Paginated Books" : {
+    "transaction" : "Get Paginated Books",
+    "sampleCount" : 1000,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 6729.214000000003,
+    "medianResTime" : 6736.0,
+    "minResTime" : 5483.0,
+    "maxResTime" : 7736.0,
+    "pct1ResTime" : 7248.8,
+    "pct2ResTime" : 7390.95,
+    "pct3ResTime" : 7615.93,
+    "throughput" : 10.754191446116122,
+    "receivedKBytesPerSec" : 51.065101842192995,
+    "sentKBytesPerSec" : 1.4808017518577867
+  }
+}

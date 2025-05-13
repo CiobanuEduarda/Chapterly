@@ -8,8 +8,10 @@ import multer from 'multer';
 import { initializeDatabase } from './db/init';
 import * as bookRepository from './repositories/bookRepository';
 import { Book } from './types';
-import reviewRoutes from './routes/reviewRoutes';
+import bookRoutes from './routes/bookRoutes';
 import categoryRoutes from './routes/categoryRoutes';
+import reviewRoutes from './routes/reviewRoutes';
+import statsRoutes from './routes/stats';
 
 // Create Express app
 const app = express();
@@ -261,9 +263,11 @@ app.get('/api/files', (req, res) => {
   });
 });
 
-// Add the new routes
-app.use('/api/reviews', reviewRoutes);
+// Register routes
+app.use('/api/books', bookRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Initialize database and start server
 const PORT = process.env.PORT || 3001;

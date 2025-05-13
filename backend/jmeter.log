@@ -1,0 +1,432 @@
+2025-05-13 16:00:13,725 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2025-05-13 16:00:13,743 INFO o.a.j.JMeter: Loading user properties from: /opt/homebrew/Cellar/jmeter/5.6.3/libexec/bin/user.properties
+2025-05-13 16:00:13,744 INFO o.a.j.JMeter: Loading system properties from: /opt/homebrew/Cellar/jmeter/5.6.3/libexec/bin/system.properties
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: Version 5.6.3
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: java.version=21.0.7
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: os.name=Mac OS X
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: os.arch=aarch64
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: os.version=13.5
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: file.encoding=UTF-8
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: java.awt.headless=true
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: Max memory     =1073741824
+2025-05-13 16:00:13,748 INFO o.a.j.JMeter: Available Processors =8
+2025-05-13 16:00:13,757 INFO o.a.j.JMeter: Default Locale=English (EN)
+2025-05-13 16:00:13,757 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2025-05-13 16:00:13,757 INFO o.a.j.JMeter: JMeterHome=/opt/homebrew/Cellar/jmeter/5.6.3/libexec
+2025-05-13 16:00:13,757 INFO o.a.j.JMeter: user.dir  =/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend
+2025-05-13 16:00:13,758 INFO o.a.j.JMeter: PWD       =/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend
+2025-05-13 16:00:13,759 INFO o.a.j.JMeter: IP: 127.0.0.1 Name: Es-MacBook-Air.local FullName: localhost
+2025-05-13 16:00:13,770 INFO o.a.j.JMeter: Setting property 'jmeter.reportgenerator.outputdir' to:'/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report'
+2025-05-13 16:00:13,772 INFO o.a.j.s.FileServer: Default base='/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend'
+2025-05-13 16:00:13,774 INFO o.a.j.s.FileServer: Set new base='/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter'
+2025-05-13 16:00:13,920 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2025-05-13 16:00:13,961 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
+2025-05-13 16:00:13,963 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2025-05-13 16:00:13,966 INFO o.a.j.s.SaveService: Loading file: jmeter/bookstore-test-plan.jmx
+2025-05-13 16:00:14,023 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2025-05-13 16:00:14,023 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2025-05-13 16:00:14,024 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2025-05-13 16:00:14,024 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2025-05-13 16:00:14,024 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2025-05-13 16:00:14,024 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2025-05-13 16:00:14,050 INFO o.a.j.JMeter: Creating summariser <summary>
+2025-05-13 16:00:14,053 INFO o.a.j.r.d.ReportGenerator: ReportGenerator will use for Parsing the separator: ','
+2025-05-13 16:00:14,053 INFO o.a.j.r.d.ReportGenerator: Will generate report at end of test from  results file: jmeter-results/results.jtl
+2025-05-13 16:00:14,053 INFO o.a.j.r.d.ReportGenerator: Reading report generator properties from: /opt/homebrew/Cellar/jmeter/5.6.3/libexec/bin/reportgenerator.properties
+2025-05-13 16:00:14,054 INFO o.a.j.r.d.ReportGenerator: Merging with JMeter properties
+2025-05-13 16:00:14,083 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.temp_dir' not found, using default value 'temp' instead.
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.apdex_per_transaction' not found, using default value 'null' instead.
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: apdex_per_transaction is empty, not APDEX per transaction customization
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.sample_filter' not found, using default value 'null' instead.
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.report_title' not found, using default value 'null' instead.
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.start_date' not found, using default value 'null' instead.
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.end_date' not found, using default value 'null' instead.
+2025-05-13 16:00:14,089 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.date_format' not found, using default value 'null' instead.
+2025-05-13 16:00:14,090 INFO o.a.j.r.c.ReportGeneratorConfiguration: Will use date range start date: null, end date: null
+2025-05-13 16:00:14,100 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.totalTPS.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,100 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.activeThreadsOverTime.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,100 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.timeVsThreads.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimeDistribution.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.transactionsPerSecond.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimePercentiles.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimePercentilesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.connectTimeOverTime.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,101 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.latenciesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2025-05-13 16:00:14,102 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.filters_only_sample_series' not found, using default value 'true' instead.
+2025-05-13 16:00:14,102 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.series_filter' not found, using default value '' instead.
+2025-05-13 16:00:14,102 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.show_controllers_only' not found, using default value 'false' instead.
+2025-05-13 16:00:14,102 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.filters_only_sample_series' not found, using default value 'true' instead.
+2025-05-13 16:00:14,102 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.series_filter' not found, using default value '' instead.
+2025-05-13 16:00:14,102 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.show_controllers_only' not found, using default value 'false' instead.
+2025-05-13 16:00:14,113 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2025-05-13 16:00:14,113 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2025-05-13 16:00:14,113 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2025-05-13 16:00:14,117 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2025-05-13 16:00:14,117 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2025-05-13 16:00:14,165 INFO o.a.j.r.ClassFinder: Will scan jar /opt/homebrew/Cellar/jmeter/5.6.3/libexec/lib/ext/jmeter-plugins-manager-1.9.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.functions.Function], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2025-05-13 16:00:14,246 INFO o.a.j.JMeter: Running test (1747141214246)
+2025-05-13 16:00:14,261 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Bookstore API Test Group
+2025-05-13 16:00:14,261 INFO o.a.j.e.StandardJMeterEngine: Starting 100 threads for group Bookstore API Test Group.
+2025-05-13 16:00:14,261 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2025-05-13 16:00:14,262 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=100 ramp-up=10 delayedStart=false
+2025-05-13 16:00:14,267 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-1
+2025-05-13 16:00:14,285 INFO o.a.j.p.h.s.HTTPHCAbstractImpl: Local host = Es-MacBook-Air.local
+2025-05-13 16:00:14,289 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2025-05-13 16:00:14,289 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2025-05-13 16:00:14,290 INFO o.a.j.p.h.s.HTTPHC4Impl: HTTP request retry count = 0
+2025-05-13 16:00:14,291 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2025-05-13 16:00:14,291 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to UTF-8
+2025-05-13 16:00:14,291 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2025-05-13 16:00:14,291 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2025-05-13 16:00:14,364 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-2
+2025-05-13 16:00:14,465 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-3
+2025-05-13 16:00:14,564 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-4
+2025-05-13 16:00:14,668 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-5
+2025-05-13 16:00:14,764 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-6
+2025-05-13 16:00:14,863 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-7
+2025-05-13 16:00:14,963 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-8
+2025-05-13 16:00:15,062 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-9
+2025-05-13 16:00:15,168 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-10
+2025-05-13 16:00:15,263 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-11
+2025-05-13 16:00:15,363 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-12
+2025-05-13 16:00:15,467 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-13
+2025-05-13 16:00:15,564 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-14
+2025-05-13 16:00:15,668 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-15
+2025-05-13 16:00:15,769 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-16
+2025-05-13 16:00:15,865 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-17
+2025-05-13 16:00:15,963 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-18
+2025-05-13 16:00:16,064 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-19
+2025-05-13 16:00:16,163 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-20
+2025-05-13 16:00:16,270 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-21
+2025-05-13 16:00:16,367 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-22
+2025-05-13 16:00:16,465 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-23
+2025-05-13 16:00:16,563 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-24
+2025-05-13 16:00:16,664 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-25
+2025-05-13 16:00:16,764 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-26
+2025-05-13 16:00:16,865 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-27
+2025-05-13 16:00:16,962 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-28
+2025-05-13 16:00:17,065 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-29
+2025-05-13 16:00:17,165 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-30
+2025-05-13 16:00:17,263 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-31
+2025-05-13 16:00:17,363 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-32
+2025-05-13 16:00:17,463 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-33
+2025-05-13 16:00:17,564 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-34
+2025-05-13 16:00:17,663 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-35
+2025-05-13 16:00:17,763 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-36
+2025-05-13 16:00:17,868 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-37
+2025-05-13 16:00:17,967 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-38
+2025-05-13 16:00:18,064 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-39
+2025-05-13 16:00:18,163 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-40
+2025-05-13 16:00:18,262 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-41
+2025-05-13 16:00:18,368 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-42
+2025-05-13 16:00:18,469 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-43
+2025-05-13 16:00:18,564 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-44
+2025-05-13 16:00:18,665 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-45
+2025-05-13 16:00:18,763 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-46
+2025-05-13 16:00:18,863 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-47
+2025-05-13 16:00:18,964 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-48
+2025-05-13 16:00:19,062 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-49
+2025-05-13 16:00:19,165 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-50
+2025-05-13 16:00:19,263 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-51
+2025-05-13 16:00:19,366 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-52
+2025-05-13 16:00:19,466 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-53
+2025-05-13 16:00:19,563 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-54
+2025-05-13 16:00:19,666 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-55
+2025-05-13 16:00:19,768 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-56
+2025-05-13 16:00:19,867 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-57
+2025-05-13 16:00:19,964 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-58
+2025-05-13 16:00:20,062 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-59
+2025-05-13 16:00:20,162 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-60
+2025-05-13 16:00:20,264 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-61
+2025-05-13 16:00:20,364 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-62
+2025-05-13 16:00:20,463 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-63
+2025-05-13 16:00:20,567 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-64
+2025-05-13 16:00:20,668 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-65
+2025-05-13 16:00:20,764 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-66
+2025-05-13 16:00:20,864 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-67
+2025-05-13 16:00:20,962 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-68
+2025-05-13 16:00:21,064 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-69
+2025-05-13 16:00:21,164 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-70
+2025-05-13 16:00:21,263 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-71
+2025-05-13 16:00:21,362 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-72
+2025-05-13 16:00:21,462 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-73
+2025-05-13 16:00:21,565 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-74
+2025-05-13 16:00:21,669 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-75
+2025-05-13 16:00:21,763 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-76
+2025-05-13 16:00:21,862 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-77
+2025-05-13 16:00:21,962 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-78
+2025-05-13 16:00:22,064 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-79
+2025-05-13 16:00:22,164 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-80
+2025-05-13 16:00:22,265 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-81
+2025-05-13 16:00:22,363 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-82
+2025-05-13 16:00:22,462 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-83
+2025-05-13 16:00:22,567 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-84
+2025-05-13 16:00:22,664 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-85
+2025-05-13 16:00:22,763 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-86
+2025-05-13 16:00:22,868 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-87
+2025-05-13 16:00:22,964 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-88
+2025-05-13 16:00:23,064 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-89
+2025-05-13 16:00:23,165 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-90
+2025-05-13 16:00:23,263 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-91
+2025-05-13 16:00:23,362 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-92
+2025-05-13 16:00:23,464 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-93
+2025-05-13 16:00:23,567 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-94
+2025-05-13 16:00:23,663 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-95
+2025-05-13 16:00:23,764 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-96
+2025-05-13 16:00:23,862 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-97
+2025-05-13 16:00:23,970 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-98
+2025-05-13 16:00:24,064 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-99
+2025-05-13 16:00:24,162 INFO o.a.j.t.JMeterThread: Thread started: Bookstore API Test Group 1-100
+2025-05-13 16:00:30,009 INFO o.a.j.r.Summariser: summary +    205 in 00:00:16 =   13.0/s Avg:  3818 Min:  2003 Max:  8922 Err:   141 (68.78%) Active: 100 Started: 100 Finished: 0
+2025-05-13 16:01:00,135 INFO o.a.j.r.Summariser: summary +    687 in 00:00:30 =   22.8/s Avg:  4386 Min:  2002 Max:  7696 Err:   341 (49.64%) Active: 100 Started: 100 Finished: 0
+2025-05-13 16:01:00,139 INFO o.a.j.r.Summariser: summary =    892 in 00:00:46 =   19.4/s Avg:  4255 Min:  2002 Max:  8922 Err:   482 (54.04%)
+2025-05-13 16:01:30,005 INFO o.a.j.r.Summariser: summary +    673 in 00:00:30 =   22.5/s Avg:  4444 Min:  2002 Max:  7736 Err:   338 (50.22%) Active: 100 Started: 100 Finished: 0
+2025-05-13 16:01:30,007 INFO o.a.j.r.Summariser: summary =   1565 in 00:01:16 =   20.7/s Avg:  4336 Min:  2002 Max:  8922 Err:   820 (52.40%)
+2025-05-13 16:01:42,343 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-26
+2025-05-13 16:01:42,343 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-26
+2025-05-13 16:01:42,548 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-27
+2025-05-13 16:01:42,549 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-27
+2025-05-13 16:01:42,852 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-18
+2025-05-13 16:01:42,852 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-18
+2025-05-13 16:01:43,192 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-22
+2025-05-13 16:01:43,192 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-22
+2025-05-13 16:01:43,275 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-31
+2025-05-13 16:01:43,275 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-31
+2025-05-13 16:01:43,494 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-25
+2025-05-13 16:01:43,494 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-25
+2025-05-13 16:01:43,587 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-19
+2025-05-13 16:01:43,587 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-19
+2025-05-13 16:01:43,596 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-28
+2025-05-13 16:01:43,604 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-29
+2025-05-13 16:01:43,604 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-28
+2025-05-13 16:01:43,604 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-29
+2025-05-13 16:01:43,782 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-40
+2025-05-13 16:01:43,782 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-40
+2025-05-13 16:01:43,849 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-23
+2025-05-13 16:01:43,849 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-23
+2025-05-13 16:01:43,869 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-38
+2025-05-13 16:01:43,869 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-38
+2025-05-13 16:01:43,988 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-32
+2025-05-13 16:01:43,988 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-32
+2025-05-13 16:01:44,024 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-21
+2025-05-13 16:01:44,024 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-21
+2025-05-13 16:01:44,115 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-44
+2025-05-13 16:01:44,115 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-44
+2025-05-13 16:01:44,129 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-41
+2025-05-13 16:01:44,129 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-41
+2025-05-13 16:01:44,339 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-20
+2025-05-13 16:01:44,339 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-20
+2025-05-13 16:01:44,513 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-47
+2025-05-13 16:01:44,513 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-47
+2025-05-13 16:01:44,639 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-36
+2025-05-13 16:01:44,639 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-36
+2025-05-13 16:01:44,801 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-30
+2025-05-13 16:01:44,802 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-30
+2025-05-13 16:01:44,873 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-43
+2025-05-13 16:01:44,873 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-43
+2025-05-13 16:01:44,918 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-24
+2025-05-13 16:01:44,918 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-24
+2025-05-13 16:01:45,055 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-52
+2025-05-13 16:01:45,055 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-52
+2025-05-13 16:01:45,110 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-54
+2025-05-13 16:01:45,110 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-54
+2025-05-13 16:01:45,328 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-33
+2025-05-13 16:01:45,328 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-33
+2025-05-13 16:01:45,336 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-37
+2025-05-13 16:01:45,337 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-37
+2025-05-13 16:01:45,347 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-34
+2025-05-13 16:01:45,347 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-34
+2025-05-13 16:01:45,376 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-46
+2025-05-13 16:01:45,376 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-46
+2025-05-13 16:01:45,378 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-42
+2025-05-13 16:01:45,379 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-42
+2025-05-13 16:01:45,513 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-35
+2025-05-13 16:01:45,513 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-35
+2025-05-13 16:01:45,686 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-39
+2025-05-13 16:01:45,686 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-39
+2025-05-13 16:01:45,696 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-45
+2025-05-13 16:01:45,696 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-45
+2025-05-13 16:01:45,746 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-53
+2025-05-13 16:01:45,746 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-53
+2025-05-13 16:01:45,785 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-50
+2025-05-13 16:01:45,785 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-50
+2025-05-13 16:01:45,848 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-57
+2025-05-13 16:01:45,848 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-57
+2025-05-13 16:01:46,041 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-48
+2025-05-13 16:01:46,042 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-48
+2025-05-13 16:01:46,090 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-14
+2025-05-13 16:01:46,090 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-14
+2025-05-13 16:01:46,116 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-13
+2025-05-13 16:01:46,116 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-13
+2025-05-13 16:01:46,375 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-55
+2025-05-13 16:01:46,375 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-55
+2025-05-13 16:01:46,431 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-17
+2025-05-13 16:01:46,431 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-17
+2025-05-13 16:01:46,598 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-7
+2025-05-13 16:01:46,599 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-7
+2025-05-13 16:01:46,785 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-6
+2025-05-13 16:01:46,785 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-6
+2025-05-13 16:01:47,165 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-9
+2025-05-13 16:01:47,165 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-9
+2025-05-13 16:01:47,234 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-15
+2025-05-13 16:01:47,234 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-15
+2025-05-13 16:01:47,325 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-51
+2025-05-13 16:01:47,325 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-51
+2025-05-13 16:01:47,366 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-12
+2025-05-13 16:01:47,366 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-12
+2025-05-13 16:01:47,409 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-49
+2025-05-13 16:01:47,409 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-49
+2025-05-13 16:01:47,431 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-8
+2025-05-13 16:01:47,431 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-8
+2025-05-13 16:01:47,599 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-62
+2025-05-13 16:01:47,599 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-62
+2025-05-13 16:01:47,734 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-63
+2025-05-13 16:01:47,734 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-63
+2025-05-13 16:01:47,762 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-58
+2025-05-13 16:01:47,763 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-58
+2025-05-13 16:01:47,790 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-16
+2025-05-13 16:01:47,790 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-16
+2025-05-13 16:01:47,831 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-61
+2025-05-13 16:01:47,832 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-61
+2025-05-13 16:01:47,899 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-56
+2025-05-13 16:01:47,899 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-56
+2025-05-13 16:01:47,992 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-10
+2025-05-13 16:01:47,992 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-10
+2025-05-13 16:01:48,076 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-11
+2025-05-13 16:01:48,076 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-11
+2025-05-13 16:01:48,112 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-59
+2025-05-13 16:01:48,113 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-59
+2025-05-13 16:01:48,344 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-68
+2025-05-13 16:01:48,344 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-68
+2025-05-13 16:01:48,345 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-60
+2025-05-13 16:01:48,345 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-60
+2025-05-13 16:01:48,547 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-4
+2025-05-13 16:01:48,547 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-4
+2025-05-13 16:01:48,705 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-71
+2025-05-13 16:01:48,705 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-71
+2025-05-13 16:01:48,966 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-69
+2025-05-13 16:01:48,967 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-69
+2025-05-13 16:01:49,025 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-67
+2025-05-13 16:01:49,025 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-67
+2025-05-13 16:01:49,100 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-70
+2025-05-13 16:01:49,100 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-70
+2025-05-13 16:01:49,125 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-65
+2025-05-13 16:01:49,125 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-65
+2025-05-13 16:01:49,133 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-1
+2025-05-13 16:01:49,133 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-1
+2025-05-13 16:01:49,207 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-2
+2025-05-13 16:01:49,208 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-2
+2025-05-13 16:01:49,221 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-75
+2025-05-13 16:01:49,222 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-75
+2025-05-13 16:01:49,245 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-66
+2025-05-13 16:01:49,245 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-66
+2025-05-13 16:01:49,328 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-86
+2025-05-13 16:01:49,329 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-86
+2025-05-13 16:01:49,421 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-5
+2025-05-13 16:01:49,421 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-5
+2025-05-13 16:01:49,423 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-76
+2025-05-13 16:01:49,423 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-76
+2025-05-13 16:01:49,500 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-94
+2025-05-13 16:01:49,501 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-94
+2025-05-13 16:01:49,544 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-64
+2025-05-13 16:01:49,544 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-64
+2025-05-13 16:01:49,662 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-73
+2025-05-13 16:01:49,663 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-73
+2025-05-13 16:01:49,753 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-79
+2025-05-13 16:01:49,753 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-79
+2025-05-13 16:01:49,832 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-3
+2025-05-13 16:01:49,832 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-3
+2025-05-13 16:01:49,857 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-74
+2025-05-13 16:01:49,857 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-74
+2025-05-13 16:01:50,043 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-81
+2025-05-13 16:01:50,044 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-81
+2025-05-13 16:01:50,095 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-85
+2025-05-13 16:01:50,096 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-85
+2025-05-13 16:01:50,260 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-77
+2025-05-13 16:01:50,260 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-77
+2025-05-13 16:01:50,315 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-87
+2025-05-13 16:01:50,315 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-87
+2025-05-13 16:01:50,499 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-89
+2025-05-13 16:01:50,499 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-89
+2025-05-13 16:01:50,506 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-90
+2025-05-13 16:01:50,507 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-90
+2025-05-13 16:01:50,527 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-82
+2025-05-13 16:01:50,528 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-82
+2025-05-13 16:01:50,546 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-72
+2025-05-13 16:01:50,546 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-72
+2025-05-13 16:01:50,610 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-84
+2025-05-13 16:01:50,610 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-84
+2025-05-13 16:01:50,648 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-80
+2025-05-13 16:01:50,648 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-80
+2025-05-13 16:01:50,661 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-78
+2025-05-13 16:01:50,661 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-78
+2025-05-13 16:01:50,720 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-88
+2025-05-13 16:01:50,720 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-88
+2025-05-13 16:01:50,743 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-98
+2025-05-13 16:01:50,743 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-98
+2025-05-13 16:01:50,749 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-91
+2025-05-13 16:01:50,749 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-91
+2025-05-13 16:01:50,767 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-83
+2025-05-13 16:01:50,767 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-83
+2025-05-13 16:01:50,821 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-97
+2025-05-13 16:01:50,821 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-97
+2025-05-13 16:01:50,853 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-93
+2025-05-13 16:01:50,853 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-93
+2025-05-13 16:01:50,886 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-100
+2025-05-13 16:01:50,886 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-100
+2025-05-13 16:01:50,887 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-96
+2025-05-13 16:01:50,887 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-96
+2025-05-13 16:01:50,953 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-99
+2025-05-13 16:01:50,953 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-99
+2025-05-13 16:01:50,992 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-92
+2025-05-13 16:01:50,992 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-92
+2025-05-13 16:01:51,051 INFO o.a.j.t.JMeterThread: Thread is done: Bookstore API Test Group 1-95
+2025-05-13 16:01:51,051 INFO o.a.j.t.JMeterThread: Thread finished: Bookstore API Test Group 1-95
+2025-05-13 16:01:51,051 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2025-05-13 16:01:51,052 INFO o.a.j.r.Summariser: summary +    435 in 00:00:21 =   20.7/s Avg:  4673 Min:  2001 Max:  7391 Err:   180 (41.38%) Active: 0 Started: 100 Finished: 100
+2025-05-13 16:01:51,052 INFO o.a.j.r.Summariser: summary =   2000 in 00:01:37 =   20.7/s Avg:  4410 Min:  2001 Max:  8922 Err:  1000 (50.00%)
+2025-05-13 16:01:51,053 INFO o.a.j.JMeter: Generating Dashboard
+2025-05-13 16:01:51,053 INFO o.a.j.r.d.ReportGenerator: Flushing result collector before report Generation
+2025-05-13 16:01:51,068 INFO o.a.j.r.p.NormalizerSampleConsumer: Using format, 'ms', to parse timeStamp field
+2025-05-13 16:01:51,282 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.AggregateConsumer#stopProducing(): beginDate produced 0 samples
+2025-05-13 16:01:51,283 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.AggregateConsumer#stopProducing(): endDate produced 0 samples
+2025-05-13 16:01:51,285 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.ApdexSummaryConsumer#stopProducing(): apdexSummary produced 0 samples
+2025-05-13 16:01:51,285 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.RequestsSummaryConsumer#stopProducing(): requestsSummary produced 0 samples
+2025-05-13 16:01:51,290 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.StatisticsSummaryConsumer#stopProducing(): statisticsSummary produced 0 samples
+2025-05-13 16:01:51,292 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.Top5ErrorsBySamplerConsumer#stopProducing(): top5ErrorsBySampler produced 0 samples
+2025-05-13 16:01:51,292 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.ErrorsSummaryConsumer#stopProducing(): errorsSummary produced 0 samples
+2025-05-13 16:01:51,292 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.HitsPerSecondGraphConsumer#stopProducing(): hitsPerSecond produced 0 samples
+2025-05-13 16:01:51,340 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.LatencyVSRequestGraphConsumer#stopProducing(): latencyVsRequest produced 0 samples
+2025-05-13 16:01:51,341 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.SyntheticResponseTimeDistributionGraphConsumer#stopProducing(): syntheticResponseTimeDistribution produced 0 samples
+2025-05-13 16:01:51,341 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.BytesThroughputGraphConsumer#stopProducing(): bytesThroughputOverTime produced 0 samples
+2025-05-13 16:01:51,341 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.CodesPerSecondGraphConsumer#stopProducing(): codesPerSecond produced 0 samples
+2025-05-13 16:01:51,379 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeVSRequestGraphConsumer#stopProducing(): responseTimeVsRequest produced 0 samples
+2025-05-13 16:01:51,380 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): startIntervalControlerFilter produced 14000 samples
+2025-05-13 16:01:51,380 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TotalTPSGraphConsumer#stopProducing(): totalTPS produced 0 samples
+2025-05-13 16:01:51,380 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ActiveThreadsGraphConsumer#stopProducing(): activeThreadsOverTime produced 0 samples
+2025-05-13 16:01:51,380 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TimeVSThreadGraphConsumer#stopProducing(): timeVsThreads produced 0 samples
+2025-05-13 16:01:51,381 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeDistributionGraphConsumer#stopProducing(): responseTimeDistribution produced 0 samples
+2025-05-13 16:01:51,381 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TransactionsPerSecondGraphConsumer#stopProducing(): transactionsPerSecond produced 0 samples
+2025-05-13 16:01:51,381 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimePercentilesGraphConsumer#stopProducing(): responseTimePercentiles produced 0 samples
+2025-05-13 16:01:51,384 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimePercentilesOverTimeGraphConsumer#stopProducing(): responseTimePercentilesOverTime produced 0 samples
+2025-05-13 16:01:51,385 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeOverTimeGraphConsumer#stopProducing(): responseTimesOverTime produced 0 samples
+2025-05-13 16:01:51,385 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ConnectTimeOverTimeGraphConsumer#stopProducing(): connectTimeOverTime produced 0 samples
+2025-05-13 16:01:51,385 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.LatencyOverTimeGraphConsumer#stopProducing(): latenciesOverTime produced 0 samples
+2025-05-13 16:01:51,385 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): nameFilter produced 30000 samples
+2025-05-13 16:01:51,385 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): dateRangeFilter produced 6000 samples
+2025-05-13 16:01:51,385 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.NormalizerSampleConsumer#stopProducing(): normalizer produced 2000 samples
+2025-05-13 16:01:51,386 INFO o.a.j.r.p.CsvFileSampleSource: produce(): 2000 samples produced in 294ms on channel 0
+2025-05-13 16:01:51,386 INFO o.a.j.r.d.ReportGenerator: Exporting data using exporter:'json' of className:'org.apache.jmeter.report.dashboard.JsonExporter'
+2025-05-13 16:01:51,450 INFO o.a.j.r.d.JsonExporter: Found data for consumer statisticsSummary in context
+2025-05-13 16:01:51,450 INFO o.a.j.r.d.JsonExporter: Creating statistics for overall
+2025-05-13 16:01:51,450 INFO o.a.j.r.d.JsonExporter: Creating statistics for other transactions
+2025-05-13 16:01:51,450 INFO o.a.j.r.d.JsonExporter: Checking output folder
+2025-05-13 16:01:51,451 INFO o.a.j.r.d.JsonExporter: Writing statistics JSON to /Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report/statistics.json
+2025-05-13 16:01:51,481 INFO o.a.j.r.d.ReportGenerator: Exporting data using exporter:'html' of className:'org.apache.jmeter.report.dashboard.HtmlTemplateExporter'
+2025-05-13 16:01:51,483 INFO o.a.j.r.d.HtmlTemplateExporter: Will generate dashboard in folder: /Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report
+2025-05-13 16:01:51,560 INFO o.a.j.r.d.HtmlTemplateExporter: Report will be generated in: /Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report, creating folder structure
+2025-05-13 16:01:51,562 INFO o.a.j.r.d.TemplateVisitor: Copying folder from '/opt/homebrew/Cellar/jmeter/5.6.3/libexec/bin/report-template' to '/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report', got message: /Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report, found non empty folder with following content [/Users/eciobanu/Documents/sem4UBB/mpp/figma_app/bookstore/backend/jmeter-results/report/statistics.json], will be ignored
+2025-05-13 16:01:52,101 INFO o.a.j.JMeter: Dashboard generated

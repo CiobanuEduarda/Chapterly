@@ -29,6 +29,11 @@ model Book {
   categories BookCategory[]
 
   @@map("books")
+  @@index([title])
+  @@index([author])
+  @@index([genre])
+  @@index([rating])
+  @@index([price])
 }
 
 // New Review model
@@ -44,6 +49,8 @@ model Review {
   book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
+  @@index([bookId])
+  @@index([rating])
 }
 
 // New Category model
@@ -58,6 +65,7 @@ model Category {
   books       BookCategory[]
 
   @@map("categories")
+  @@index([name])
 }
 
 // Junction table for many-to-many relationship between Book and Category
@@ -72,4 +80,6 @@ model BookCategory {
 
   @@id([bookId, categoryId])
   @@map("book_categories")
+  @@index([bookId])
+  @@index([categoryId])
 }

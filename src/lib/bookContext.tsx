@@ -126,9 +126,15 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
       
       const response = await api.getBooks(params);
       
+      // Create a Set of existing book IDs for quick lookup
+      const existingIds = new Set(state.books.map(book => book.id));
+      
+      // Filter out any books that already exist in the current list
+      const newBooks = response.books.filter(book => !existingIds.has(book.id));
+      
       setState(prev => ({
         ...prev,
-        books: [...prev.books, ...response.books],
+        books: [...prev.books, ...newBooks],
         isLoading: false,
         pagination: response.pagination
       }));
