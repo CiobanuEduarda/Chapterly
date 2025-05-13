@@ -1,15 +1,17 @@
 import express from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth';
+import { requireAdmin, requireUser } from '../middleware/roleAuth';
 import * as bookRepository from '../repositories/bookRepository';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all books with pagination and filtering
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, requireUser, async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
+    const userRole = (req as any).user?.role;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const filter = req.query.filter as string;
@@ -17,25 +19,27 @@ router.get('/', authenticateToken, async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause based on filter
-    const where: Prisma.BookWhereInput = filter ? {
-      OR: [
-        { title: { contains: filter, mode: Prisma.QueryMode.insensitive } },
-        { author: { contains: filter, mode: Prisma.QueryMode.insensitive } },
-        { genre: { contains: filter, mode: Prisma.QueryMode.insensitive } }
-      ]
-    } : {};
+    // Build where clause based on filter and role
+    const where: Prisma.BookWhereInput = {
+      ...(filter ? {
+        OR: [
+          { title: { contains: filter, mode: Prisma.QueryMode.insensitive } },
+          { author: { contains: filter, mode: Prisma.QueryMode.insensitive } },
+          { genre: { contains: filter, mode: Prisma.QueryMode.insensitive } }
+        ]
+      } : {}),
+      // Only show user's books unless admin
+      ...(userRole !== 'ADMIN' ? { userId } : {})
+    };
 
     // Build orderBy clause based on sort
     const orderBy: Prisma.BookOrderByWithRelationInput = sort ? {
-      [sort]: Prisma.SortOrder.desc
-    } : {
-      rating: Prisma.SortOrder.desc
-    };
+      [sort.split(':')[0]]: sort.split(':')[1] as Prisma.SortOrder
+    } : { id: 'asc' };
 
     const [books, total] = await Promise.all([
       prisma.book.findMany({
-        where: { ...where, userId },
+        where,
         orderBy,
         skip,
         take: limit,
@@ -53,7 +57,7 @@ router.get('/', authenticateToken, async (req, res) => {
           }
         }
       }),
-      prisma.book.count({ where: { ...where, userId } })
+      prisma.book.count({ where })
     ]);
 
     res.json({
@@ -73,12 +77,17 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Get a single book by ID
-router.get('/:id', authenticateToken, async (req, res) => {
+router.get('/:id', authenticateToken, requireUser, async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
+    const userRole = (req as any).user?.role;
     const id = parseInt(req.params.id);
+    
     const book = await prisma.book.findFirst({
-      where: { id, userId },
+      where: { 
+        id,
+        ...(userRole !== 'ADMIN' ? { userId } : {})
+      },
       include: {
         categories: {
           include: {
@@ -105,14 +114,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 // Create a new book
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, requireUser, async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
     if (!userId || typeof userId !== 'number') {
-      return res.status(401).json({ error: 'Unauthorized: userId missing or invalid. You must be logged in to create books.' });
+      return res.status(401).json({ error: 'Unauthorized: userId missing or invalid' });
     }
     const { title, author, genre, price, rating } = req.body;
-    // Ensure all fields are present and correct type
     if (!title || !author || !genre || typeof price !== 'number' || typeof rating !== 'number') {
       return res.status(400).json({ error: 'Missing or invalid book fields' });
     }
@@ -126,14 +134,21 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Update a book
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, requireUser, async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
+    const userRole = (req as any).user?.role;
     const id = parseInt(req.params.id);
     const { title, author, genre, price, rating, categoryIds } = req.body;
 
-    // Check ownership
-    const bookToUpdate = await prisma.book.findFirst({ where: { id, userId } });
+    // Check ownership or admin status
+    const bookToUpdate = await prisma.book.findFirst({ 
+      where: { 
+        id,
+        ...(userRole !== 'ADMIN' ? { userId } : {})
+      }
+    });
+    
     if (!bookToUpdate) {
       return res.status(404).json({ error: 'Book not found or not owned by user' });
     }
@@ -178,13 +193,20 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a book
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, requireUser, async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
+    const userRole = (req as any).user?.role;
     const id = parseInt(req.params.id);
 
-    // Check ownership
-    const bookToDelete = await prisma.book.findFirst({ where: { id, userId } });
+    // Check ownership or admin status
+    const bookToDelete = await prisma.book.findFirst({ 
+      where: { 
+        id,
+        ...(userRole !== 'ADMIN' ? { userId } : {})
+      }
+    });
+    
     if (!bookToDelete) {
       return res.status(404).json({ error: 'Book not found or not owned by user' });
     }

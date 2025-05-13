@@ -24,6 +24,7 @@ export default function LoginPage() {
       }
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id.toString());
+      localStorage.setItem("userRole", data.user.role);
       router.push("/bookshelf");
     } catch (err) {
       setError("Network error");
