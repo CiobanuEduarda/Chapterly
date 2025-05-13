@@ -51,6 +51,7 @@ async function generateBooks(categories: any[]) {
       genre: faker.helpers.arrayElement(categories).name,
       price: parseFloat(faker.commerce.price({ min: 5, max: 100 })),
       rating: randomNumber(1, 5),
+      userId: 1,
     });
 
     // Insert in batches
