@@ -164,6 +164,9 @@ router.put('/:id', authenticateToken, requireUser, async (req, res) => {
     const id = parseInt(req.params.id);
     const { title, author, genre, price, rating, categoryIds } = req.body;
 
+    // Debug logging
+    console.log('UPDATE attempt:', { userId, userRole, bookId: id });
+
     // Check ownership or admin status
     const bookToUpdate = await prisma.book.findFirst({ 
       where: { 
@@ -171,6 +174,7 @@ router.put('/:id', authenticateToken, requireUser, async (req, res) => {
         ...(userRole !== 'ADMIN' ? { userId } : {})
       }
     });
+    console.log('Book found for update:', bookToUpdate);
     
     if (!bookToUpdate) {
       return res.status(404).json({ error: 'Book not found or not owned by user' });
@@ -230,6 +234,9 @@ router.delete('/:id', authenticateToken, requireUser, async (req, res) => {
     const userRole = (req as any).user?.role;
     const id = parseInt(req.params.id);
 
+    // Debug logging
+    console.log('DELETE attempt:', { userId, userRole, bookId: id });
+
     // Check ownership or admin status
     const bookToDelete = await prisma.book.findFirst({ 
       where: { 
@@ -237,6 +244,7 @@ router.delete('/:id', authenticateToken, requireUser, async (req, res) => {
         ...(userRole !== 'ADMIN' ? { userId } : {})
       }
     });
+    console.log('Book found for delete:', bookToDelete);
     
     if (!bookToDelete) {
       return res.status(404).json({ error: 'Book not found or not owned by user' });

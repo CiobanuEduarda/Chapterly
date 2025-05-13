@@ -184,8 +184,15 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
 
   const deleteBook = useCallback(async (id: number): Promise<boolean> => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('You must be logged in to delete a book');
+      }
       const response = await fetch(`http://localhost:3001/api/books/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (!response.ok) {
@@ -207,10 +214,15 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
 
   const updateBook = useCallback(async (id: number, book: Omit<Book, 'id'>): Promise<Book> => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('You must be logged in to update a book');
+      }
       const response = await fetch(`http://localhost:3001/api/books/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(book),
       });

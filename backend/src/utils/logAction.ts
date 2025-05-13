@@ -14,6 +14,12 @@ export async function logAction({
   entityId?: number;
 }) {
   try {
+    // Check if user exists before logging
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      console.error('Attempted to log action for non-existent user:', userId);
+      return;
+    }
     await prisma.log.create({
       data: {
         userId,
