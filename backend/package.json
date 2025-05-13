@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "init-db": "ts-node src/scripts/initDb.ts",
-    "seed-db": "ts-node src/scripts/seedDb.ts"
+    "seed-db": "ts-node src/scripts/seed.ts"
   },
   "keywords": [],
   "author": "",
