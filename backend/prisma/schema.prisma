@@ -6,10 +6,70 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Existing Book model
+model Book {
+  id        Int      @id @default(autoincrement())
+  title     String
+  author    String
+  genre     String
+  price     Float
+  rating    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // New relationships
+  reviews   Review[]
+  categories BookCategory[]
+
+  @@map("books")
+}
+
+// New Review model
+model Review {
+  id        Int      @id @default(autoincrement())
+  content   String
+  rating    Int      @db.SmallInt
+  bookId    Int      @map("book_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+// New Category model
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relationships
+  books       BookCategory[]
+
+  @@map("categories")
+}
+
+// Junction table for many-to-many relationship between Book and Category
+model BookCategory {
+  bookId     Int      @map("book_id")
+  categoryId Int      @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relationships
+  book       Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, categoryId])
+  @@map("book_categories")
 }

@@ -14,32 +14,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Existing Book model
 model Book {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  rating      Int      @default(0)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        Int      @id @default(autoincrement())
+  title     String
+  author    String
+  genre     String
+  price     Float
+  rating    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relationships
-  authors    Author[] @relation("BookToAuthor")
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int      @map("category_id")
+  // New relationships
+  reviews    Review[]
+  categories BookCategory[]
+
+  @@map("books")
 }
 
-model Author {
+// New Review model
+model Review {
   id        Int      @id @default(autoincrement())
-  name      String
-  biography String?
+  content   String
+  rating    Int      @db.SmallInt
+  bookId    Int      @map("book_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relationships
-  books Book[] @relation("BookToAuthor")
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
 }
 
+// New Category model
 model Category {
   id          Int      @id @default(autoincrement())
   name        String   @unique
@@ -48,5 +56,21 @@ model Category {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relationships
-  books Book[]
+  books BookCategory[]
+
+  @@map("categories")
+}
+
+// Junction table for many-to-many relationship between Book and Category
+model BookCategory {
+  bookId     Int      @map("book_id")
+  categoryId Int      @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relationships
+  book     Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, categoryId])
+  @@map("book_categories")
 }

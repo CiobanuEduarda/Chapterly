@@ -123,18 +123,19 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.BookScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  description: 'description',
+  author: 'author',
+  genre: 'genre',
   price: 'price',
   rating: 'rating',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  categoryId: 'categoryId'
+  updatedAt: 'updatedAt'
 };
 
-exports.Prisma.AuthorScalarFieldEnum = {
+exports.Prisma.ReviewScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  biography: 'biography',
+  content: 'content',
+  rating: 'rating',
+  bookId: 'bookId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -145,6 +146,12 @@ exports.Prisma.CategoryScalarFieldEnum = {
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BookCategoryScalarFieldEnum = {
+  bookId: 'bookId',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -165,8 +172,9 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   Book: 'Book',
-  Author: 'Author',
-  Category: 'Category'
+  Review: 'Review',
+  Category: 'Category',
+  BookCategory: 'BookCategory'
 };
 
 /**

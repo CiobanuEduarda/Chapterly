@@ -1,4 +1,6 @@
-import pool from '../config/database';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // SQL to drop the books table
 const dropBooksTable = `DROP TABLE IF EXISTS books CASCADE;`;
@@ -37,22 +39,15 @@ EXECUTE FUNCTION update_updated_at_column();
 // Initialize the database
 export async function initializeDatabase() {
   try {
-    // Drop the books table if it exists
-    await pool.query(dropBooksTable);
-    console.log('Books table dropped if it existed');
-
-    // Create the books table
-    await pool.query(createBooksTable);
-    console.log('Books table created');
-
-    // Create the update timestamp trigger
-    await pool.query(createUpdateTimestampTrigger);
-    console.log('Update timestamp trigger created');
-
+    // Test the connection
+    await prisma.$connect();
+    console.log('Successfully connected to database');
     return true;
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error('Error connecting to database:', error);
     return false;
+  } finally {
+    await prisma.$disconnect();
   }
 } 
  
