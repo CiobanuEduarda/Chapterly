@@ -34,7 +34,7 @@ export default function RootLayout({
                     <header className="sticky top-0 z-50 w-full">
                       <NetworkStatus />
                     </header>
-                    <nav className="p-4 bg-gray-10 flex gap-1 items-center bg-[#52796F] ">
+                    <nav className="p-4 bg-gray-10 flex gap-1 items-center bg-[#52796F]">
                       <Link href="/bookshelf" className="font-bold text-lg ">Chapterly</Link>
                       {/* Other nav links here */}
                       {isAdmin && (
