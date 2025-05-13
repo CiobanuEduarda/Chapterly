@@ -62,6 +62,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
   });
   const [filter, setFilter] = useState<string | null>(null);
   const [sort, setSort] = useState<string | null>(null);
+  const [autoGenerate, setAutoGenerate] = useState(true);
 
   const refreshBooks = useCallback(async () => {
     try {
@@ -147,16 +148,23 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
 
   const addBook = useCallback(async (book: Omit<Book, 'id'>): Promise<Book> => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('You must be logged in to add a book');
+      }
+
       const response = await fetch('http://localhost:3001/api/books', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(book),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add book');
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to add book');
       }
 
       const newBook = await response.json();
@@ -230,6 +238,18 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     refreshBooks();
   }, [refreshBooks, filter, sort]);
+
+  // Function to generate a random book
+  const generateRandomBook = useCallback(async () => {
+    if (!autoGenerate) return;
+    // Check if user is logged in
+    if (typeof window !== 'undefined' && !localStorage.getItem('token')) {
+      alert('You must be logged in to auto-generate books.');
+      setAutoGenerate(false);
+      return;
+    }
+    // ... existing code ...
+  }, []);
 
   // Provide state and functions to children components
   const value: BookContextType = {

@@ -1,12 +1,15 @@
 import express from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
+import { authenticateToken } from '../middleware/auth';
+import * as bookRepository from '../repositories/bookRepository';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all books with pagination and filtering
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
+    const userId = (req as any).user?.userId;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const filter = req.query.filter as string;
@@ -32,7 +35,7 @@ router.get('/', async (req, res) => {
 
     const [books, total] = await Promise.all([
       prisma.book.findMany({
-        where,
+        where: { ...where, userId },
         orderBy,
         skip,
         take: limit,
@@ -50,7 +53,7 @@ router.get('/', async (req, res) => {
           }
         }
       }),
-      prisma.book.count({ where })
+      prisma.book.count({ where: { ...where, userId } })
     ]);
 
     res.json({
@@ -70,11 +73,12 @@ router.get('/', async (req, res) => {
 });
 
 // Get a single book by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
   try {
+    const userId = (req as any).user?.userId;
     const id = parseInt(req.params.id);
-    const book = await prisma.book.findUnique({
-      where: { id },
+    const book = await prisma.book.findFirst({
+      where: { id, userId },
       include: {
         categories: {
           include: {
@@ -101,34 +105,19 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create a new book
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, author, genre, price, rating, categoryIds } = req.body;
-
-    const book = await prisma.book.create({
-      data: {
-        title,
-        author,
-        genre,
-        price,
-        rating,
-        categories: categoryIds ? {
-          create: categoryIds.map((categoryId: number) => ({
-            category: {
-              connect: { id: categoryId }
-            }
-          }))
-        } : undefined
-      },
-      include: {
-        categories: {
-          include: {
-            category: true
-          }
-        }
-      }
-    });
-
+    const userId = (req as any).user?.userId;
+    if (!userId || typeof userId !== 'number') {
+      return res.status(401).json({ error: 'Unauthorized: userId missing or invalid. You must be logged in to create books.' });
+    }
+    const { title, author, genre, price, rating } = req.body;
+    // Ensure all fields are present and correct type
+    if (!title || !author || !genre || typeof price !== 'number' || typeof rating !== 'number') {
+      return res.status(400).json({ error: 'Missing or invalid book fields' });
+    }
+    const bookData = { title, author, genre, price, rating };
+    const book = await bookRepository.createBook(bookData, userId);
     res.status(201).json(book);
   } catch (error) {
     console.error('Error creating book:', error);
@@ -137,10 +126,17 @@ router.post('/', async (req, res) => {
 });
 
 // Update a book
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
+    const userId = (req as any).user?.userId;
     const id = parseInt(req.params.id);
     const { title, author, genre, price, rating, categoryIds } = req.body;
+
+    // Check ownership
+    const bookToUpdate = await prisma.book.findFirst({ where: { id, userId } });
+    if (!bookToUpdate) {
+      return res.status(404).json({ error: 'Book not found or not owned by user' });
+    }
 
     // First, delete existing category relationships
     if (categoryIds) {
@@ -182,17 +178,25 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a book
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
+    const userId = (req as any).user?.userId;
     const id = parseInt(req.params.id);
+
+    // Check ownership
+    const bookToDelete = await prisma.book.findFirst({ where: { id, userId } });
+    if (!bookToDelete) {
+      return res.status(404).json({ error: 'Book not found or not owned by user' });
+    }
+
     await prisma.book.delete({
       where: { id }
     });
     res.status(204).send();
   } catch (error) {
-    console.error(`Error deleting book with ID ${req.params.id}:`, error);
+    console.error('Error deleting book:', error);
     res.status(500).json({ error: 'Failed to delete book' });
   }
 });
 
-export default router; 
+export default router;

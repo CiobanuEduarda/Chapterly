@@ -7,16 +7,20 @@ export async function getBooks(
   page: number = 1,
   limit: number = 10,
   filter?: string,
-  sort?: string
+  sort?: string,
+  userId?: number
 ): Promise<{ books: Book[]; total: number }> {
   try {
-    const where: Prisma.BookWhereInput = filter ? {
-      OR: [
-        { title: { contains: filter, mode: 'insensitive' as const } },
-        { author: { contains: filter, mode: 'insensitive' as const } },
-        { genre: { contains: filter, mode: 'insensitive' as const } }
-      ]
-    } : {};
+    const where: Prisma.BookWhereInput = {
+      ...(filter ? {
+        OR: [
+          { title: { contains: filter, mode: 'insensitive' as const } },
+          { author: { contains: filter, mode: 'insensitive' as const } },
+          { genre: { contains: filter, mode: 'insensitive' as const } }
+        ]
+      } : {}),
+      ...(userId ? { userId } : {})
+    };
 
     const orderBy: Prisma.BookOrderByWithRelationInput = sort ? {
       [sort.split(':')[0]]: sort.split(':')[1] as Prisma.SortOrder
@@ -52,15 +56,17 @@ export async function getBookById(id: number): Promise<Book | null> {
 }
 
 // Create a new book
-export async function createBook(book: Omit<Book, 'id'>): Promise<Book> {
-  try {
-    return await prisma.book.create({
-      data: book
-    });
-  } catch (error) {
-    console.error('Error creating book:', error);
-    throw error;
+export async function createBook(book: Omit<Book, 'id'>, userId: number): Promise<Book> {
+  if (!userId || typeof userId !== 'number') {
+    throw new Error('Valid userId is required to create a book');
   }
+
+  return await prisma.book.create({
+    data: {
+      ...book,
+      userId: userId
+    } as Prisma.BookUncheckedCreateInput
+  });
 }
 
 // Update a book

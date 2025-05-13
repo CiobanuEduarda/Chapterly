@@ -12,6 +12,7 @@ import bookRoutes from './routes/bookRoutes';
 import categoryRoutes from './routes/categoryRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import statsRoutes from './routes/stats';
+import authRoutes from './routes/authRoutes';
 
 // Create Express app
 const app = express();
@@ -100,100 +101,6 @@ const validatePaginationParams = (req: express.Request, res: express.Response, n
   next();
 };
 
-// Routes
-app.get('/api/books', validatePaginationParams, async (req, res) => {
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const filter = req.query.filter as string;
-    const sort = req.query.sort as string;
-    
-    const { books, total } = await bookRepository.getBooks(page, limit, filter, sort);
-    
-    res.json({
-      books,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasMore: page * limit < total
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching books:', error);
-    res.status(500).json({ error: 'Failed to fetch books' });
-  }
-});
-
-app.get('/api/books/:id', validateIdParam, async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const book = await bookRepository.getBookById(id);
-    
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' });
-    }
-    
-    res.json(book);
-  } catch (error) {
-    console.error(`Error fetching book with ID ${req.params.id}:`, error);
-    res.status(500).json({ error: 'Failed to fetch book' });
-  }
-});
-
-app.post('/api/books', validateBookAttributes, async (req, res) => {
-  try {
-    const newBook = await bookRepository.createBook(req.body);
-    
-    // Notify all clients about the new book
-    io.emit('books', { type: 'add', book: newBook });
-    
-    res.status(201).json(newBook);
-  } catch (error) {
-    console.error('Error creating book:', error);
-    res.status(500).json({ error: 'Failed to create book' });
-  }
-});
-
-app.put('/api/books/:id', validateIdParam, validateBookAttributes, async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const updatedBook = await bookRepository.updateBook(id, req.body);
-    
-    if (!updatedBook) {
-      return res.status(404).json({ error: 'Book not found' });
-    }
-    
-    // Notify all clients about the updated book
-    io.emit('books', { type: 'update', book: updatedBook });
-    
-    res.json(updatedBook);
-  } catch (error) {
-    console.error(`Error updating book with ID ${req.params.id}:`, error);
-    res.status(500).json({ error: 'Failed to update book' });
-  }
-});
-
-app.delete('/api/books/:id', validateIdParam, async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const deleted = await bookRepository.deleteBook(id);
-    
-    if (!deleted) {
-      return res.status(404).json({ error: 'Book not found' });
-    }
-    
-    // Notify all clients about the deleted book
-    io.emit('books', { type: 'delete', id });
-    
-    res.status(204).send();
-  } catch (error) {
-    console.error(`Error deleting book with ID ${req.params.id}:`, error);
-    res.status(500).json({ error: 'Failed to delete book' });
-  }
-});
-
 // File upload endpoint
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
@@ -268,6 +175,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/auth', authRoutes);
 
 // Initialize database and start server
 const PORT = process.env.PORT || 3001;

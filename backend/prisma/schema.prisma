@@ -23,6 +23,8 @@ model Book {
   rating    Int
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 
   // New relationships
   reviews   Review[]
@@ -82,4 +84,15 @@ model BookCategory {
   @@map("book_categories")
   @@index([bookId])
   @@index([categoryId])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("USER")
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

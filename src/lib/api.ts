@@ -31,10 +31,11 @@ export const api = {
       if (params?.limit) queryParams.append('limit', params.limit.toString());
       if (params?.sort) queryParams.append('sort', params.sort);
       if (params?.filter) queryParams.append('filter', params.filter);
-      
-      const response = await fetch(`${API_URL}/books?${queryParams.toString()}`);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const response = await fetch(`${API_URL}/books?${queryParams.toString()}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+      });
       if (!response.ok) throw new Error('Failed to fetch books');
-      
       const data = await response.json();
       
       // Cache books for offline use
@@ -59,9 +60,13 @@ export const api = {
 
   async addBook(book: Omit<Book, 'id'>) {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify(book),
       });
       
@@ -94,9 +99,13 @@ export const api = {
 
   async updateBook(id: number, book: Omit<Book, 'id'>) {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify(book),
       });
       
@@ -124,8 +133,10 @@ export const api = {
 
   async deleteBook(id: number) {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books/${id}`, {
         method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
       });
       
       if (!response.ok) throw new Error('Failed to delete book');
