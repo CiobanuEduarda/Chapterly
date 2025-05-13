@@ -8,6 +8,8 @@ export interface PaginationParams {
   limit?: number;
   sort?: string;
   filter?: string;
+  genre?: string;
+  rating?: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -31,6 +33,8 @@ export const api = {
       if (params?.limit) queryParams.append('limit', params.limit.toString());
       if (params?.sort) queryParams.append('sort', params.sort);
       if (params?.filter) queryParams.append('filter', params.filter);
+      if (params?.genre) queryParams.append('genre', params.genre);
+      if (params?.rating) queryParams.append('rating', params.rating.toString());
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books?${queryParams.toString()}`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : undefined

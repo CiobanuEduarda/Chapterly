@@ -12,14 +12,12 @@ interface BookListProps {
 }
 
 export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
-  const { state, loadMoreBooks, setFilter, setSort, refreshBooks, addBook, deleteBook } = useBooks();
+  const { state, loadMoreBooks, setFilter, setSort, refreshBooks, addBook, deleteBook, setGenre, setRating, genre, rating = 0 } = useBooks();
   const { books, isLoading, isOfflineMode, pagination } = state;
   const { isConnected, lastMessage } = useWebSocket();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<string>("title");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [filterGenre, setFilterGenre] = useState<string>("");
-  const [filterRating, setFilterRating] = useState<number>(0);
   const [useInfiniteScroll, setUseInfiniteScroll] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(5);
@@ -68,13 +66,13 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       }
       
       // Apply genre filter
-      if (filterGenre) {
-        filteredBooks = filteredBooks.filter(book => book.genre === filterGenre);
+      if (genre) {
+        filteredBooks = filteredBooks.filter(book => book.genre === genre);
       }
       
       // Apply rating filter
-      if (filterRating > 0) {
-        filteredBooks = filteredBooks.filter(book => book.rating >= filterRating);
+      if (rating > 0) {
+        filteredBooks = filteredBooks.filter(book => book.rating >= rating);
       }
       
       // Apply sorting
@@ -102,7 +100,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       // Force a refresh of the books
       refreshBooks();
     }
-  }, [lastMessage, searchTerm, filterGenre, filterRating, sortField, sortDirection, refreshBooks, setFilter, setSort, useInfiniteScroll, currentPage, booksPerPage]);
+  }, [lastMessage, searchTerm, genre, rating, sortField, sortDirection, refreshBooks, setFilter, setSort, useInfiniteScroll, currentPage, booksPerPage]);
 
   // Auto-refresh functionality
   useEffect(() => {
@@ -184,26 +182,12 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
 
   // Handle genre filter change
   const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilterGenre(value);
-    
-    if (value) {
-      setFilter(`genre:${value}`);
-    } else {
-      setFilter(null);
-    }
+    setGenre?.(e.target.value);
   };
 
   // Handle rating filter change
   const handleRatingChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Number(e.target.value);
-    setFilterRating(value);
-    
-    if (value > 0) {
-      setFilter(`rating:${value}`);
-    } else {
-      setFilter(null);
-    }
+    setRating?.(Number(e.target.value));
   };
 
   // Find cheapest book with explicit type checks
@@ -310,7 +294,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
           <div>
             <label className="text-lg font-semibold text-[#042405] mr-2">Genre:</label>
             <select
-              value={filterGenre}
+              value={genre ?? ""}
               onChange={handleGenreChange}
               className="p-2 border border-black rounded-md"
             >
@@ -326,7 +310,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
           <div>
             <label className="text-lg font-semibold text-[#042405] mr-2">Rating:</label>
             <select
-              value={filterRating}
+              value={rating}
               onChange={handleRatingChange}
               className="p-2 border border-black rounded-md"
             >

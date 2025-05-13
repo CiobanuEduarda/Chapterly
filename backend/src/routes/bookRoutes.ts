@@ -16,6 +16,8 @@ router.get('/', authenticateToken, requireUser, async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const filter = req.query.filter as string;
+    const genre = req.query.genre as string;
+    const rating = req.query.rating ? parseInt(req.query.rating as string) : undefined;
     const sort = req.query.sort as string;
 
     const skip = (page - 1) * limit;
@@ -29,6 +31,8 @@ router.get('/', authenticateToken, requireUser, async (req, res) => {
           { genre: { contains: filter, mode: Prisma.QueryMode.insensitive } }
         ]
       } : {}),
+      ...(genre ? { genre } : {}),
+      ...(rating ? { rating: { gte: rating } } : {}),
       // Only show user's books unless admin
       ...(userRole !== 'ADMIN' ? { userId } : {})
     };

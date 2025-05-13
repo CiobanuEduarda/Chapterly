@@ -15,10 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true);
     if (typeof window !== 'undefined') {
       setIsAdmin(localStorage.getItem('userRole') === 'ADMIN');
     }
@@ -36,10 +34,10 @@ export default function RootLayout({
                     <header className="sticky top-0 z-50 w-full">
                       <NetworkStatus />
                     </header>
-                    <nav className="p-4  bg-[#52796F] flex gap-1 items-center">
+                    <nav className="p-4 bg-[#52796F] flex gap-1 items-center">
                       <Link href="/bookshelf" className="font-bold text-lg ">Chapterly</Link>
                       {/* Other nav links here */}
-                      {hasMounted && isAdmin && (
+                      {isAdmin && (
                         <Link href="/admin/monitored-users" className="ml-auto bg-[#C76E77] text-white px-4 py-2 rounded hover:bg-[#C76E77]">Admin Dashboard</Link>
                       )}
                     </nav>

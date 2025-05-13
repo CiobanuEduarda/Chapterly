@@ -39,6 +39,10 @@ interface BookContextType {
   loadMoreBooks: () => Promise<void>
   setFilter: (filter: string | null) => void
   setSort: (sort: string | null) => void
+  setGenre?: (genre: string) => void
+  setRating?: (rating: number) => void
+  genre?: string;
+  rating?: number;
 }
 
 // Create a React context to provide global state management
@@ -63,21 +67,21 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
   const [filter, setFilter] = useState<string | null>(null);
   const [sort, setSort] = useState<string | null>(null);
   const [autoGenerate, setAutoGenerate] = useState(true);
+  const [genre, setGenre] = useState<string>("");
+  const [rating, setRating] = useState<number>(0);
 
   const refreshBooks = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
-      
       const params: PaginationParams = {
         page: 1,
-        limit: state.pagination.limit
+        limit: state.pagination.limit,
+        ...(filter ? { filter } : {}),
+        ...(sort ? { sort } : {}),
+        ...(genre ? { genre } : {}),
+        ...(rating ? { rating } : {}),
       };
-      
-      if (filter) params.filter = filter;
-      if (sort) params.sort = sort;
-      
       const response = await api.getBooks(params);
-      
       setState({
         books: response.books,
         isLoading: false,
@@ -86,10 +90,8 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error('Failed to fetch books:', error);
-      
       // If fetch fails, try to get books from offline storage
       const offlineBooks = offlineStorage.getBooks();
-      
       setState({
         books: offlineBooks,
         isLoading: false,
@@ -102,29 +104,25 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
           hasMore: false
         }
       });
-      
       if (offlineBooks.length > 0) {
         showToast('Using offline book data', 'info');
       }
     }
-  }, [status, showToast, filter, sort, state.pagination.limit]);
+  }, [status, showToast, filter, sort, genre, rating, state.pagination.limit]);
 
   const loadMoreBooks = useCallback(async () => {
     if (state.isLoading || !state.pagination.hasMore) return;
-    
     try {
       setState(prev => ({ ...prev, isLoading: true }));
-      
       const nextPage = state.pagination.page + 1;
-      
       const params: PaginationParams = {
         page: nextPage,
-        limit: state.pagination.limit
+        limit: state.pagination.limit,
+        ...(filter ? { filter } : {}),
+        ...(sort ? { sort } : {}),
+        ...(genre ? { genre } : {}),
+        ...(rating ? { rating } : {}),
       };
-      
-      if (filter) params.filter = filter;
-      if (sort) params.sort = sort;
-      
       const response = await api.getBooks(params);
       
       // Create a Set of existing book IDs for quick lookup
@@ -144,7 +142,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
       setState(prev => ({ ...prev, isLoading: false }));
       showToast('Failed to load more books', 'error');
     }
-  }, [state.isLoading, state.pagination, filter, sort, showToast]);
+  }, [state.isLoading, state.pagination, filter, sort, genre, rating, showToast]);
 
   const addBook = useCallback(async (book: Omit<Book, 'id'>): Promise<Book> => {
     try {
@@ -246,10 +244,11 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Load books on mount and when network status, filter, or sort changes
+  // Load books on mount and when network status, filter, sort, genre, or rating changes
   useEffect(() => {
     refreshBooks();
-  }, [refreshBooks, filter, sort]);
+    // eslint-disable-next-line
+  }, [filter, sort, genre, rating, status]);
 
   // Function to generate a random book
   const generateRandomBook = useCallback(async () => {
@@ -272,7 +271,11 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     refreshBooks,
     loadMoreBooks,
     setFilter,
-    setSort
+    setSort,
+    setGenre,
+    setRating,
+    genre,
+    rating
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
