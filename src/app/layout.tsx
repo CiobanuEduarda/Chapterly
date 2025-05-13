@@ -6,12 +6,22 @@ import { NetworkProvider } from '../lib/networkContext';
 import { SyncProvider } from '../lib/syncService';
 import { NetworkStatus } from '../components/NetworkStatus';
 import '../styles/globals.css';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsAdmin(localStorage.getItem('userRole') === 'ADMIN');
+    }
+  }, []);
+
   return (
     <html lang="en">
       <body className="overflow-x-hidden">
@@ -24,6 +34,13 @@ export default function RootLayout({
                     <header className="sticky top-0 z-50 w-full">
                       <NetworkStatus />
                     </header>
+                    <nav className="p-4 bg-gray-10 flex gap-1 items-center bg-[#52796F] ">
+                      <Link href="/bookshelf" className="font-bold text-lg ">Chapterly</Link>
+                      {/* Other nav links here */}
+                      {isAdmin && (
+                        <Link href="/admin/monitored-users" className="ml-auto bg-[#C76E77] text-white px-4 py-2 rounded hover:bg-[#C76E77]">Admin Dashboard</Link>
+                      )}
+                    </nav>
                     <main className="flex-1 w-full">
                       {children}
                     </main>

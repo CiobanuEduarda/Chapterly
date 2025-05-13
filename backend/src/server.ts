@@ -13,6 +13,7 @@ import categoryRoutes from './routes/categoryRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import statsRoutes from './routes/stats';
 import authRoutes from './routes/authRoutes';
+import adminRoutes from './routes/adminRoutes';
 
 // Create Express app
 const app = express();
@@ -176,6 +177,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Initialize database and start server
 const PORT = process.env.PORT || 3001;
