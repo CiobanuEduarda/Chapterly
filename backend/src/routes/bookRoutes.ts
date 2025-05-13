@@ -3,6 +3,7 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin, requireUser } from '../middleware/roleAuth';
 import * as bookRepository from '../repositories/bookRepository';
+import { logAction } from '../utils/logAction';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -60,6 +61,13 @@ router.get('/', authenticateToken, requireUser, async (req, res) => {
       prisma.book.count({ where })
     ]);
 
+    // Log read action (list)
+    await logAction({
+      userId,
+      action: 'READ',
+      entity: 'Book',
+    });
+
     res.json({
       books,
       pagination: {
@@ -106,6 +114,14 @@ router.get('/:id', authenticateToken, requireUser, async (req, res) => {
       return res.status(404).json({ error: 'Book not found' });
     }
 
+    // Log read action (single)
+    await logAction({
+      userId,
+      action: 'READ',
+      entity: 'Book',
+      entityId: id
+    });
+
     res.json(book);
   } catch (error) {
     console.error(`Error fetching book with ID ${req.params.id}:`, error);
@@ -126,6 +142,13 @@ router.post('/', authenticateToken, requireUser, async (req, res) => {
     }
     const bookData = { title, author, genre, price, rating };
     const book = await bookRepository.createBook(bookData, userId);
+    // Log create action
+    await logAction({
+      userId,
+      action: 'CREATE',
+      entity: 'Book',
+      entityId: book.id
+    });
     res.status(201).json(book);
   } catch (error) {
     console.error('Error creating book:', error);
@@ -185,6 +208,14 @@ router.put('/:id', authenticateToken, requireUser, async (req, res) => {
       }
     });
 
+    // Log update action
+    await logAction({
+      userId,
+      action: 'UPDATE',
+      entity: 'Book',
+      entityId: id
+    });
+
     res.json(book);
   } catch (error) {
     console.error(`Error updating book with ID ${req.params.id}:`, error);
@@ -214,6 +245,15 @@ router.delete('/:id', authenticateToken, requireUser, async (req, res) => {
     await prisma.book.delete({
       where: { id }
     });
+
+    // Log delete action
+    await logAction({
+      userId,
+      action: 'DELETE',
+      entity: 'Book',
+      entityId: id
+    });
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting book:', error);
