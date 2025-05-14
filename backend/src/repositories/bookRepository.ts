@@ -93,7 +93,7 @@ export async function deleteBook(id: number): Promise<boolean> {
     console.error(`Error deleting book with ID ${id}:`, error);
     throw error;
   }
-}
+} 
 
 // Delete all books (for seeding)
 export async function deleteAllBooks(): Promise<void> {
