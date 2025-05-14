@@ -1,6 +1,29 @@
+"use client"; // Add this line to make it a client component
+
 import Link from "next/link"; // Import Link component from Next.js
+import { useEffect } from 'react'; // Import useEffect
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if running in the browser and if user is authenticated
+    if (typeof window !== 'undefined') {
+      const authenticated = localStorage.getItem('isAuthenticated') === 'true';
+      if (!authenticated) {
+        router.push('/login');
+      }
+    }
+  }, [router]);
+
+  // Optional: You might want to return null or a loading spinner while redirecting
+  // For now, it will render the existing HomePage content if authenticated,
+  // or briefly before redirecting if not.
+  // if (typeof window !== 'undefined' && localStorage.getItem('isAuthenticated') !== 'true') {
+  //   return null; // Or a loading indicator
+  // }
+
   return (
     <div className="flex h-screen w-full bg-[#89A593]"> {/* Main container with full height and background color */}
       {/* Left Section */}
