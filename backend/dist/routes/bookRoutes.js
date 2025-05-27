@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,6 +45,7 @@ const logAction_1 = require("../utils/logAction");
 const router = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
 // Get all books with pagination and filtering
+//@ts-ignore
 router.get('/', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, res) => {
     try {
         const userId = req.user?.userId;
@@ -73,6 +73,7 @@ router.get('/', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, re
         };
         // Build orderBy clause based on sort
         const orderBy = sort ? {
+            // @ts-ignore
             [sort.split(':')[0]]: sort.split(':')[1]
         } : { id: 'asc' };
         const [books, total] = await Promise.all([
@@ -120,10 +121,12 @@ router.get('/', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, re
     }
 });
 // Get a single book by ID
+//@ts-ignore
 router.get('/:id', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, res) => {
     try {
         const userId = req.user?.userId;
         const userRole = req.user?.role;
+        // @ts-ignore
         const id = parseInt(req.params.id);
         const book = await prisma.book.findFirst({
             where: {
@@ -161,6 +164,7 @@ router.get('/:id', auth_1.authenticateToken, roleAuth_1.requireUser, async (req,
     }
 });
 // Create a new book
+//@ts-ignore
 router.post('/', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, res) => {
     try {
         const userId = req.user?.userId;
@@ -197,10 +201,12 @@ router.post('/', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, r
     }
 });
 // Update a book
+//@ts-ignore
 router.put('/:id', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, res) => {
     try {
         const userId = req.user?.userId;
         const userRole = req.user?.role;
+        // @ts-ignore
         const id = parseInt(req.params.id);
         const { title, author, genre, price, rating, categoryIds } = req.body;
         // Debug logging
@@ -261,10 +267,12 @@ router.put('/:id', auth_1.authenticateToken, roleAuth_1.requireUser, async (req,
     }
 });
 // Delete a book
+//@ts-ignore
 router.delete('/:id', auth_1.authenticateToken, roleAuth_1.requireUser, async (req, res) => {
     try {
         const userId = req.user?.userId;
         const userRole = req.user?.role;
+        // @ts-ignore
         const id = parseInt(req.params.id);
         // Debug logging
         console.log('DELETE attempt:', { userId, userRole, bookId: id });

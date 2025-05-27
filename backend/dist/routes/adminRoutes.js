@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -11,6 +10,7 @@ const roleAuth_1 = require("../middleware/roleAuth");
 const router = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
 // Get all monitored users (admin only)
+//@ts-ignore
 router.get('/monitored-users', auth_1.authenticateToken, roleAuth_1.requireAdmin, async (req, res) => {
     try {
         const monitored = await prisma.monitoredUser.findMany({

@@ -1,11 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// @ts-ignore, @ts-nocheck
 exports.requireUser = exports.requireAdmin = void 0;
 exports.requireRole = requireRole;
-// @ts-ignore
 function requireRole(roles) {
-    // @ts-ignore
     return (req, res, next) => {
         const userRole = req.user?.role;
         if (!userRole) {

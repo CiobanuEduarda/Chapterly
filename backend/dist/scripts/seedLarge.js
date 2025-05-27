@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
@@ -18,12 +17,14 @@ async function generateCategories() {
     const categories = [];
     for (let i = 0; i < NUM_CATEGORIES; i++) {
         categories.push({
+            //@ts-ignore
             name: faker_1.faker.helpers.uniqueArray(faker_1.faker.commerce.department, 1)[0],
             description: faker_1.faker.commerce.productDescription(),
         });
     }
     console.log('Inserting categories...');
     await prisma.category.createMany({
+        //@ts-ignore
         data: categories,
         skipDuplicates: true,
     });

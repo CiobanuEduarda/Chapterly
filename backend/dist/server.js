@@ -1,9 +1,9 @@
-// @ts-nocheck
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// @ts-nocheck
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const http_1 = require("http");
@@ -72,6 +72,7 @@ const validateBookAttributes = (req, res, next) => {
     next();
 };
 const validateIdParam = (req, res, next) => {
+    //@ts-ignore
     const id = parseInt(req.params.id);
     if (isNaN(id) || id <= 0) {
         return res.status(400).json({ error: 'Invalid ID parameter' });

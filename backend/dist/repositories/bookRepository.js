@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBooks = getBooks;
@@ -10,11 +9,7 @@ exports.deleteAllBooks = deleteAllBooks;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 // Get all books with pagination, filtering, and sorting
-async function getBooks(page = 1, limit = 10, filter, 
-    // @ts-ignore
-    sort, 
-    // @ts-ignore
-    userId) {
+async function getBooks(page = 1, limit = 10, filter, sort, userId) {
     try {
         const where = {
             ...(filter ? {
@@ -33,14 +28,11 @@ async function getBooks(page = 1, limit = 10, filter,
         } : { id: 'asc' };
         const [books, total] = await Promise.all([
             prisma.book.findMany({
-                // @ts-ignore
                 where,
-                // @ts-ignore
                 orderBy,
                 skip: (page - 1) * limit,
                 take: limit,
             }),
-            // @ts-ignore
             prisma.book.count({ where })
         ]);
         return { books, total };
@@ -51,7 +43,6 @@ async function getBooks(page = 1, limit = 10, filter,
     }
 }
 // Get a book by ID
-// @ts-ignore
 async function getBookById(id) {
     try {
         return await prisma.book.findUnique({
@@ -64,7 +55,6 @@ async function getBookById(id) {
     }
 }
 // Create a new book
-// @ts-ignore
 async function createBook(book, userId) {
     if (!userId || typeof userId !== 'number') {
         throw new Error('Valid userId is required to create a book');
@@ -77,7 +67,6 @@ async function createBook(book, userId) {
     });
 }
 // Update a book
-// @ts-ignore
 async function updateBook(id, book) {
     try {
         return await prisma.book.update({
@@ -91,7 +80,6 @@ async function updateBook(id, book) {
     }
 }
 // Delete a book
-// @ts-ignore
 async function deleteBook(id) {
     try {
         await prisma.book.delete({

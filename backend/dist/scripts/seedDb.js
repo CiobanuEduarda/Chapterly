@@ -1,7 +1,9 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const database_1 = require("../config/database");
+// @ts-ignore
+const pool = require('../config/database');
+const { Book } = require('../types');
 // Sample books data
+// @ts-ignore
 const sampleBooks = [
     {
         title: 'The Great Gatsby',
@@ -78,11 +80,11 @@ async function seedDatabase() {
     try {
         console.log('Seeding database...');
         // Clear existing data
-        await database_1.pool.query('TRUNCATE TABLE books RESTART IDENTITY CASCADE');
+        await pool.query('TRUNCATE TABLE books RESTART IDENTITY CASCADE');
         console.log('Cleared existing data');
         // Insert sample books
         for (const book of sampleBooks) {
-            await database_1.pool.query('INSERT INTO books (title, author, genre, price, rating) VALUES ($1, $2, $3, $4, $5)', [book.title, book.author, book.genre, book.price, book.rating]);
+            await pool.query('INSERT INTO books (title, author, genre, price, rating) VALUES ($1, $2, $3, $4, $5)', [book.title, book.author, book.genre, book.price, book.rating]);
         }
         console.log(`Inserted ${sampleBooks.length} sample books`);
         console.log('Database seeded successfully');

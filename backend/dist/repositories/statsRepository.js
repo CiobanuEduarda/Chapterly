@@ -1,7 +1,7 @@
-// @ts-nocheck
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBooksWithStats = exports.getBookStatistics = void 0;
+// @ts-noncheck
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 // In-memory cache
@@ -45,7 +45,9 @@ const getBookStatistics = async () => {
             return avg._avg.rating ?? 0;
         }));
         const processedCategoryDistribution = categories.map((cat, idx) => ({
+            // @ts-ignore
             categoryName: cat.name,
+            // @ts-ignore
             bookCount: categoryAgg[idx]._count.bookId,
             averageRating: avgRatings[idx],
         }));
@@ -89,8 +91,10 @@ const getBookStatistics = async () => {
             })),
         };
     });
+    // @ts-ignore
     cachedStats = stats;
     lastCacheTime = Date.now();
+    // @ts-ignore
     return stats;
 };
 exports.getBookStatistics = getBookStatistics;
