@@ -41,8 +41,27 @@ export default function MonitoredUsersPage() {
         if (!res.ok) throw new Error('Failed to fetch monitored users');
         return res.json();
       })
-      .then(data => setUsers(data))
-      .catch(err => setError(err.message))
+      .then((data: MonitoredUser[]) => {
+        // Validate the data structure
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid response format');
+        }
+        // Ensure each item matches the MonitoredUser interface
+        const validatedData = data.map(item => ({
+          id: Number(item.id),
+          userId: Number(item.userId),
+          reason: String(item.reason),
+          createdAt: String(item.createdAt),
+          user: {
+            id: Number(item.user.id),
+            email: String(item.user.email),
+            name: String(item.user.name),
+            role: String(item.user.role)
+          }
+        }));
+        setUsers(validatedData);
+      })
+      .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, [router]);
 

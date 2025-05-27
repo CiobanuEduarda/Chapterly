@@ -14,7 +14,7 @@ const dbConfig = {
 };
 
 // Create a new pool instance
-const pool = new Pool(dbConfig);
+export const pool = new Pool(dbConfig);
 
 // Test the connection
 pool.on('connect', () => {
@@ -24,7 +24,4 @@ pool.on('connect', () => {
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
   process.exit(-1);
-});
-
-export default pool; 
- 
+}); 

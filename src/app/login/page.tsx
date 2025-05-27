@@ -2,6 +2,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+interface LoginResponse {
+  token: string;
+  user: {
+    id: number;
+    role: string;
+  };
+  error?: string;
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,16 +26,16 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
+      const data = await res.json() as LoginResponse;
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error ?? "Login failed");
         return;
       }
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id.toString());
       localStorage.setItem("userRole", data.user.role);
       router.push("/bookshelf");
-    } catch (err) {
+    } catch {
       setError("Network error");
     }
   };
@@ -58,7 +67,7 @@ export default function LoginPage() {
         </div>
         <button type="submit" className="w-full bg-[#52796F] text-white py-2 rounded hover:bg-[#3A5A40]">Login</button>
         <div className="mt-4 text-center">
-          <span>Don't have an account? </span>
+          <span>Don&apos;t have an account? </span>
           <a href="/register" className="text-[#C76E77] hover:underline">Register</a>
         </div>
       </form>

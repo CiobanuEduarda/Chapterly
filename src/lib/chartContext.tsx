@@ -40,7 +40,7 @@ const getRandomColor = () => {
     "#9A8C98", "#C9ADA7", "#F2E9E4", "#22223B", "#4A4E69", "#9A8C98", "#C9ADA7", "#F2E9E4", "#22223B",
     "#4A4E69", "#6D6875", "#B5838D", "#E5989B", "#FFB4A2", "#FFCDB2", "#FFDDD2", "#E29578", "#6D6875"
   ];
-  return colors[Math.floor(Math.random() * colors.length)] || "#000000"
+  return colors[Math.floor(Math.random() * colors.length)] ?? "#000000"
 }
 
 // Provider component
@@ -64,7 +64,7 @@ export function ChartProvider({ children }: { children: React.ReactNode }) {
 
     books.forEach((book) => {
       // Genre count
-      genreMap.set(book.genre, (genreMap.get(book.genre) || 0) + 1)
+      genreMap.set(book.genre, (genreMap.get(book.genre) ?? 0) + 1)
 
       // Genre ratings
       if (!genreRatingMap.has(book.genre)) {
@@ -115,12 +115,12 @@ export function ChartProvider({ children }: { children: React.ReactNode }) {
 
   // Refresh chart data
   const refreshChartData = () => {
-    generateChartData(state.books)
+    void generateChartData(state.books)
   }
 
   // Update chart data when books change
   useEffect(() => {
-    generateChartData(state.books)
+    void generateChartData(state.books)
   }, [state.books])
 
   return (

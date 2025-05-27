@@ -1,7 +1,16 @@
-import { Book } from './bookContext';
+import type { Book } from './bookContext';
 import { offlineStorage } from './offlineStorage';
 
 const API_URL = 'http://localhost:3001/api';
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+};
 
 export interface PaginationParams {
   page?: number;
@@ -23,6 +32,11 @@ export interface PaginatedResponse<T> {
   };
 }
 
+interface ApiResponse<T> {
+  books: T[];
+  pagination: PaginatedResponse<T>['pagination'];
+}
+
 export const api = {
   baseUrl: API_URL,
 
@@ -35,12 +49,19 @@ export const api = {
       if (params?.filter) queryParams.append('filter', params.filter);
       if (params?.genre) queryParams.append('genre', params.genre);
       if (params?.rating) queryParams.append('rating', params.rating.toString());
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
       const response = await fetch(`${API_URL}/books?${queryParams.toString()}`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+        headers: getAuthHeaders()
       });
-      if (!response.ok) throw new Error('Failed to fetch books');
-      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
+        throw new Error('Failed to fetch books');
+      }
+
+      const data = await response.json() as ApiResponse<Book>;
       
       // Cache books for offline use
       offlineStorage.saveBooks(data.books);
@@ -62,29 +83,31 @@ export const api = {
     }
   },
 
-  async addBook(book: Omit<Book, 'id'>) {
+  async addBook(book: Omit<Book, 'id'>): Promise<Book> {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(book),
       });
       
-      if (!response.ok) throw new Error('Failed to add book');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
+        throw new Error('Failed to add book');
+      }
       
-      return response.json();
+      return response.json() as Promise<Book>;
     } catch (error) {
-      // Queue the operation for later sync
-      const operationId = offlineStorage.queueOperation('add', book);
-      
+      console.warn('Using offline storage due to error:', error);
       // Create a temporary book with a local ID
       const localBooks = offlineStorage.getBooks();
       const tempId = Math.max(0, ...localBooks.map(b => b.id)) + 1;
       const tempBook = { ...book, id: tempId };
+      
+      // Queue the operation for later sync
+      const operationId = offlineStorage.queueOperation('add', tempBook);
       
       // Apply the operation locally
       offlineStorage.applyOperationLocally({ 
@@ -101,50 +124,59 @@ export const api = {
     }
   },
 
-  async updateBook(id: number, book: Omit<Book, 'id'>) {
+  async updateBook(id: number, book: Omit<Book, 'id'>): Promise<Book> {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(book),
       });
       
-      if (!response.ok) throw new Error('Failed to update book');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
+        throw new Error('Failed to update book');
+      }
       
-      return response.json();
+      return response.json() as Promise<Book>;
     } catch (error) {
+      console.warn('Using offline storage due to error:', error);
+      const updatedBook = { ...book, id };
+      
       // Queue the operation for later sync
-      const operationId = offlineStorage.queueOperation('update', { id, book });
+      const operationId = offlineStorage.queueOperation('update', { id, book: updatedBook });
       
       // Apply the operation locally
       offlineStorage.applyOperationLocally({ 
         id: operationId, 
         type: 'update', 
         timestamp: Date.now(), 
-        data: { id, book },
+        data: { id, book: updatedBook },
         syncStatus: 'pending',
         retryCount: 0
       });
       
       // Return the updated book
-      return { id, ...book };
+      return updatedBook;
     }
   },
 
-  async deleteBook(id: number) {
+  async deleteBook(id: number): Promise<void> {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       const response = await fetch(`${API_URL}/books/${id}`, {
         method: 'DELETE',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+        headers: getAuthHeaders()
       });
       
-      if (!response.ok) throw new Error('Failed to delete book');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
+        throw new Error('Failed to delete book');
+      }
     } catch (error) {
+      console.warn('Using offline storage due to error:', error);
       // Queue the operation for later sync
       offlineStorage.queueOperation('delete', id);
       
@@ -161,7 +193,7 @@ export const api = {
   },
 
   // Function to sync pending operations with the server
-  async syncOfflineOperations() {
+  async syncOfflineOperations(): Promise<{ success: boolean; synced: number; failed: number }> {
     const operations = offlineStorage.getOperations();
     
     if (operations.length === 0) {
@@ -180,16 +212,16 @@ export const api = {
         
         switch (operation.type) {
           case 'add': {
-            await this.addBook(operation.data);
+            await this.addBook(operation.data as Omit<Book, 'id'>);
             break;
           }
           case 'update': {
-            const { id, book } = operation.data;
+            const { id, book } = operation.data as { id: number; book: Omit<Book, 'id'> };
             await this.updateBook(id, book);
             break;
           }
           case 'delete': {
-            await this.deleteBook(operation.data);
+            await this.deleteBook(operation.data as number);
             break;
           }
         }
@@ -197,8 +229,8 @@ export const api = {
         // Operation succeeded, remove it from the queue
         offlineStorage.removeOperation(operation.id);
         successCount++;
-      } catch (error) {
-        console.error(`Failed to sync operation ${operation.id}:`, error);
+      } catch {
+        console.error(`Failed to sync operation ${operation.id}`);
         
         // Update status to error
         offlineStorage.updateOperationStatus(operation.id, 'error');

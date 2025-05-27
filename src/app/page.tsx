@@ -15,7 +15,7 @@ export default function HomePage() {
         <div className="mt-6"> {/* Quote section with top margin */}
           <h2 className="text-xl font-bold text-[#52796F]">Quote of the day:</h2> {/* Quote title */}
           <p className="text-lg text-black font-semibold mt-2"> {/* Quote text with styling */}
-            "A reader lives a thousand lives before he dies. The man who never reads lives only one." – George R.R. Martin
+            &ldquo;A reader lives a thousand lives before he dies. The man who never reads lives only one.&rdquo; – George R.R. Martin
           </p>
         </div>
 

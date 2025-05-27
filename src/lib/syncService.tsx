@@ -15,7 +15,7 @@ interface SyncContextType {
 const SyncContext = createContext<SyncContextType | undefined>(undefined);
 
 export function SyncProvider({ children }: { children: React.ReactNode }) {
-  const { status, isServerReachable } = useNetwork();
+  const { isServerReachable } = useNetwork();
   const { showToast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
   const [pendingOperations, setPendingOperations] = useState(0);
@@ -60,7 +60,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   // Auto-sync when coming back online
   useEffect(() => {
     if (isServerReachable && pendingOperations > 0) {
-      syncNow();
+      void syncNow();
     }
   }, [isServerReachable, pendingOperations, syncNow]);
 
@@ -70,7 +70,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     
     const intervalId = setInterval(() => {
       if (isServerReachable) {
-        syncNow();
+        void syncNow();
       }
     }, 60000); // Try every minute
     

@@ -144,7 +144,16 @@ router.post('/', authenticateToken, requireUser, async (req, res) => {
     if (!title || !author || !genre || typeof price !== 'number' || typeof rating !== 'number') {
       return res.status(400).json({ error: 'Missing or invalid book fields' });
     }
-    const bookData = { title, author, genre, price, rating };
+    const bookData = {
+      title: req.body.title,
+      author: req.body.author,
+      genre: req.body.genre,
+      price: req.body.price,
+      rating: req.body.rating,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userId: userId
+    };
     const book = await bookRepository.createBook(bookData, userId);
     // Log create action
     await logAction({

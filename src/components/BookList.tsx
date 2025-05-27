@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useBooks } from '../lib/bookContext';
-import { Book } from '../lib/bookContext';
+import type { Book } from '../lib/bookContext';
 import { useInView } from 'react-intersection-observer';
 import { useWebSocket } from '../lib/websocketContext';
 import { useRouter } from 'next/navigation';
@@ -13,16 +13,14 @@ interface BookListProps {
 
 export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   const { state, loadMoreBooks, setFilter, setSort, refreshBooks, addBook, deleteBook, setGenre, setRating, genre, rating = 0 } = useBooks();
-  const { books, isLoading, isOfflineMode, pagination } = state;
-  const { isConnected, lastMessage } = useWebSocket();
+  const { books, isLoading, pagination } = state;
+  const { lastMessage } = useWebSocket();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<string>("title");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [useInfiniteScroll, setUseInfiniteScroll] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(5);
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const [refreshInterval, setRefreshInterval] = useState(5); // seconds
   const [autoGenerate, setAutoGenerate] = useState(false);
   const [autoGenerateInterval, setAutoGenerateInterval] = useState(1); // seconds
   const router = useRouter();
@@ -44,7 +42,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   // Load more books when the user scrolls to the bottom
   useEffect(() => {
     if (useInfiniteScroll && inView && !isLoading && pagination.hasMore) {
-      loadMoreBooks();
+      void loadMoreBooks();
     }
   }, [inView, isLoading, pagination.hasMore, loadMoreBooks, useInfiniteScroll]);
 
@@ -98,20 +96,18 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       setSort(null); // Reset sort to get all books
       
       // Force a refresh of the books
-      refreshBooks();
+      void refreshBooks();
     }
   }, [lastMessage, searchTerm, genre, rating, sortField, sortDirection, refreshBooks, setFilter, setSort, useInfiniteScroll, currentPage, booksPerPage]);
 
   // Auto-refresh functionality
   useEffect(() => {
-    if (!autoRefresh) return;
-    
     const intervalId = setInterval(() => {
-      refreshBooks();
-    }, refreshInterval * 1000);
+      void refreshBooks();
+    }, 5000); // 5 seconds
     
     return () => clearInterval(intervalId);
-  }, [autoRefresh, refreshInterval, refreshBooks]);
+  }, [refreshBooks]);
 
   // Function to generate a random book
   const generateRandomBook = useCallback(async () => {
@@ -124,7 +120,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     const newBook: Omit<Book, 'id'> = {
       title: `Generated Book ${Date.now()}`,
       author: `Author ${Math.floor(Math.random() * 100)}`,
-      genre: genres[Math.floor(Math.random() * genres.length)] || 'Fiction', // Fallback to 'Fiction' if undefined
+      genre: genres[Math.floor(Math.random() * genres.length)] ?? 'Fiction', // Use nullish coalescing
       price: Math.floor(Math.random() * 100) + 10,
       rating: Math.floor(Math.random() * 5) + 1
     };
@@ -141,7 +137,9 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     let intervalId: NodeJS.Timeout;
     
     if (autoGenerate) {
-      intervalId = setInterval(generateRandomBook, autoGenerateInterval * 1000);
+      intervalId = setInterval(() => {
+        void generateRandomBook();
+      }, autoGenerateInterval * 1000);
     }
     
     return () => {
@@ -203,7 +201,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setCurrentPage(newPage);
-      loadMoreBooks();
+      void loadMoreBooks();
     }
   };
 
@@ -212,7 +210,7 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     const newBooksPerPage = parseInt(e.target.value);
     setBooksPerPage(newBooksPerPage);
     setCurrentPage(1); // Reset to first page when changing books per page
-    loadMoreBooks();
+    void loadMoreBooks();
   };
 
   // Apply pagination to the displayed books
@@ -221,12 +219,23 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
       return [];
     }
     
+    // Create a Map to track unique books by ID
+    const uniqueBooks = new Map<number, Book>();
+    
+    // Add books to the Map, keeping only the latest version of each book
+    books.forEach(book => {
+      uniqueBooks.set(book.id, book);
+    });
+    
+    // Convert Map values back to array
+    const uniqueBooksArray = Array.from(uniqueBooks.values());
+    
     if (useInfiniteScroll) {
-      return books;
+      return uniqueBooksArray;
     } else {
       const startIndex = (currentPage - 1) * booksPerPage;
       const endIndex = startIndex + booksPerPage;
-      return books.slice(startIndex, endIndex);
+      return uniqueBooksArray.slice(startIndex, endIndex);
     }
   }, [books, useInfiniteScroll, currentPage, booksPerPage]);
 
@@ -235,29 +244,22 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
     if (onBookClick) {
       onBookClick(book);
     } else {
-      router.push(`/update/${book.id}`);
+      void router.push(`/update/${book.id}`);
     }
   };
   
   // Handle delete click
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = async (id: number) => {
     if (onDeleteClick) {
       const book = books.find(b => b.id === id);
       if (book) {
         onDeleteClick(id, book.title);
       }
     } else {
-      // If no onDeleteClick handler is provided, use the deleteBook function from useBooks
-      if (window.confirm('Are you sure you want to delete this book?')) {
-        deleteBook(id)
-          .then(() => {
-            // Refresh the book list after deletion
-            refreshBooks();
-          })
-          .catch(error => {
-            console.error('Error deleting book:', error);
-            alert('Failed to delete book. Please try again.');
-          });
+      try {
+        await deleteBook(id);
+      } catch (error) {
+        console.error('Error deleting book:', error);
       }
     }
   };
@@ -400,9 +402,9 @@ export function BookList({ onBookClick, onDeleteClick }: BookListProps) {
           </thead>
           <tbody>
             {displayedBooks.length > 0 ? (
-              displayedBooks.map((book) => (
+              displayedBooks.map((book, index) => (
                 <tr
-                  key={book.id}
+                  key={`${book.id}-${index}`}
                   className={`border-b border-gray-300 hover:bg-[#C76E77]/20 
                     ${book.rating === 5 ? "bg-[#A1AD92]/40" : ""}
                     ${book.id === cheapestBookId ? "bg-[#89A593]/60" : ""}

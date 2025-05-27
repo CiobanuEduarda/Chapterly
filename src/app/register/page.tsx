@@ -2,6 +2,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+interface RegisterResponse {
+  error?: string;
+  message?: string;
+}
+
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,9 +25,9 @@ export default function RegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name }),
       });
-      const data = await res.json();
+      const data = await res.json() as RegisterResponse;
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.error ?? "Registration failed");
         return;
       }
       setSuccess("Registration successful! Redirecting to login...");

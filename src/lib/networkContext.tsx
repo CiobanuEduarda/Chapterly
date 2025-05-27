@@ -65,7 +65,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const handleOnline = () => {
       // When coming back online, check if server is also available
-      checkConnection();
+      void checkConnection();
     };
 
     const handleOffline = () => {
@@ -73,10 +73,12 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     };
 
     // Check connection on mount
-    checkConnection();
+    void checkConnection();
     
     // Set up periodic checking
-    const intervalId = setInterval(checkConnection, PING_INTERVAL);
+    const intervalId = setInterval(() => {
+      void checkConnection();
+    }, PING_INTERVAL);
     
     // Set up event listeners
     window.addEventListener('online', handleOnline);

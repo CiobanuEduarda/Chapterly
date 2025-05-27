@@ -22,8 +22,12 @@ export async function getBooks(
       ...(userId ? { userId } : {})
     };
 
+    // Define valid sort fields
+    const validSortFields = ['id', 'title', 'author', 'genre', 'price', 'rating', 'createdAt', 'updatedAt'] as const;
+    type SortField = typeof validSortFields[number];
+
     const orderBy: Prisma.BookOrderByWithRelationInput = sort ? {
-      [sort.split(':')[0]]: sort.split(':')[1] as Prisma.SortOrder
+      [sort.split(':')[0] as SortField]: sort.split(':')[1] as Prisma.SortOrder
     } : { id: 'asc' };
 
     const [books, total] = await Promise.all([

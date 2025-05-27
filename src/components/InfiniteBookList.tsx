@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
-import { useBooks, Book } from '../lib/bookContext';
+import { useBooks } from '../lib/bookContext';
+import type { Book } from '../lib/bookContext';
 
 interface BookItemProps {
   book: Book;
@@ -50,8 +51,10 @@ interface InfiniteBookListProps {
 }
 
 export const InfiniteBookList: React.FC<InfiniteBookListProps> = ({ onEditBook }) => {
-  const { state, deleteBook, loadMoreBooks, hasMoreBooks } = useBooks();
-  const { books, isLoading, isLoadingMore } = state;
+  const { state, deleteBook, loadMoreBooks } = useBooks();
+  const { books, isLoading, pagination } = state;
+  const hasMoreBooks = pagination.hasMore;
+  const isLoadingMore = isLoading && books.length > 0;
   
   // Create a ref for the sentinel element (last book in the list)
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -60,9 +63,9 @@ export const InfiniteBookList: React.FC<InfiniteBookListProps> = ({ onEditBook }
   // Callback for when a book becomes visible
   const handleIntersection = useCallback(
     (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && hasMoreBooks && !isLoadingMore) {
-        loadMoreBooks();
+      const entry = entries[0];
+      if (entry?.isIntersecting && hasMoreBooks && !isLoadingMore) {
+        void loadMoreBooks();
       }
     },
     [hasMoreBooks, isLoadingMore, loadMoreBooks]
@@ -93,7 +96,7 @@ export const InfiniteBookList: React.FC<InfiniteBookListProps> = ({ onEditBook }
   // Handle book deletion
   const handleDeleteBook = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
-      await deleteBook(id);
+      void deleteBook(id);
     }
   };
   

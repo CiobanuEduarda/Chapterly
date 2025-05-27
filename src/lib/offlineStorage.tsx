@@ -1,62 +1,63 @@
-import { Book} from './bookContext';
+import type { Book } from './bookContext';
 
-export type OfflineOperation={
-    id:string;
-    type:'add'|'update'|'delete';
-    timestamp:number;
-    data:any;
-    syncStatus:'pending'|'syncing'|'error';
-    retryCount:number;
+export type OfflineOperation = {
+    id: string;
+    type: 'add' | 'update' | 'delete';
+    timestamp: number;
+    data: Book | { id: number; book: Book } | number;
+    syncStatus: 'pending' | 'syncing' | 'error';
+    retryCount: number;
 };
 
-const STORAGE_KEYS={
-    BOOKS:'offline_books',
-    OPERATIONS:'offline_operations',
-};
+const STORAGE_KEYS = {
+    BOOKS: 'offline_books',
+    OPERATIONS: 'offline_operations',
+} as const;
 
 const MAX_RETRY_COUNT=3;
 
-export const offlineStorage={
-    saveBooks(books:Book[]){
+export const offlineStorage = {
+    saveBooks(books: Book[]) {
         localStorage.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(books));
     },
 
-    getBooks():Book[]{
-       try{
-        const booksJson=localStorage.getItem(STORAGE_KEYS.BOOKS);
-        return booksJson ? JSON.parse(booksJson) : [];
-       }catch(error){
+    getBooks(): Book[] {
+        try {
+            const booksJson = localStorage.getItem(STORAGE_KEYS.BOOKS);
+            return booksJson ? JSON.parse(booksJson) as Book[] : [];
+        } catch (error) {
         console.error('Error retrieving books from localStorage:', error);
         return [];
        }
     },
 
       // Queue an operation to be performed when back online
-     queueOperation(type:'add'|'update'|'delete', data:any):string{
-        const operations=this.getOperations();
-        const newOperation:OfflineOperation={
+    queueOperation(type: 'add' | 'update' | 'delete', data: Book | { id: number; book: Book } | number): string {
+        const operations = this.getOperations();
+        const newOperation: OfflineOperation = {
             id: `${type}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
             type,
             timestamp: Date.now(),
             data,
             syncStatus: 'pending',
             retryCount: 0,
-
         };
         operations.push(newOperation);
         localStorage.setItem(STORAGE_KEYS.OPERATIONS, JSON.stringify(operations));
     
         return newOperation.id;
      },
+
      getOperations(): OfflineOperation[] {
         try {
           const operationsJson = localStorage.getItem(STORAGE_KEYS.OPERATIONS);
-          return operationsJson ? JSON.parse(operationsJson) : [];
+            return operationsJson ? JSON.parse(operationsJson) as OfflineOperation[] : [];
         } catch (error) {
           console.error('Failed to parse offline operations:', error);
           return [];
         }
       },
+
       // Update operation status
   updateOperationStatus(id: string, status: 'pending' | 'syncing' | 'error') {
     const operations = this.getOperations();
@@ -75,7 +76,7 @@ export const offlineStorage={
     );
     
     localStorage.setItem(STORAGE_KEYS.OPERATIONS, JSON.stringify(updatedOperations));
-    return updatedOperations.find(op => op.id === id)?.retryCount || 0;
+        return updatedOperations.find(op => op.id === id)?.retryCount ?? 0;
   },
 
   // Remove an operation (after successful sync or max retries)
@@ -102,21 +103,22 @@ export const offlineStorage={
     switch (operation.type) {
       case 'add': {
         const newBook = {
-          ...operation.data,
-          id: operation.data.id || Math.max(0, ...books.map(b => b.id)) + 1,
+                    ...operation.data as Book,
+                    id: (operation.data as Book).id ?? Math.max(0, ...books.map(b => b.id)) + 1,
         };
         books.push(newBook);
         break;
       }
       case 'update': {
-        const index = books.findIndex(book => book.id === operation.data.id);
+                const updateData = operation.data as { id: number; book: Book };
+                const index = books.findIndex(book => book.id === updateData.id);
         if (index !== -1) {
-          books[index] = { ...books[index], ...operation.data.book };
+                    books[index] = { ...books[index], ...updateData.book };
         }
         break;
       }
       case 'delete': {
-        const id = operation.data;
+                const id = operation.data as number;
         return books.filter(book => book.id !== id);
       }
     }

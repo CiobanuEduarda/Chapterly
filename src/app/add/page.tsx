@@ -45,20 +45,24 @@ export default function AddBook() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (validateForm()) {
-      addBook({
-        title,
-        author,
-        genre,
-        price: Number.parseFloat(price),
-        rating,
-      })
+      try {
+        await addBook({
+          title,
+          author,
+          genre,
+          price: Number.parseFloat(price),
+          rating,
+        })
 
-      showToast(`"${title}" has been added to your bookshelf`, "success")
-      router.push("/bookshelf")
+        showToast(`"${title}" has been added to your bookshelf`, "success")
+        router.push("/bookshelf")
+      } catch (error) {
+        showToast("Failed to add book. Please try again.", "error")
+      }
     }
   }
 

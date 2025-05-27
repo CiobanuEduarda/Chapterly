@@ -67,7 +67,7 @@ export default function EditBook() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (validateForm()) {
@@ -79,9 +79,13 @@ export default function EditBook() {
         rating,
       }
 
-      updateBook(bookId, updatedBook)
-      showToast(`"${title}" has been updated`, "success")
-      router.push("/bookshelf")
+      try {
+        await updateBook(bookId, updatedBook)
+        showToast(`"${title}" has been updated`, "success")
+        void router.push("/bookshelf")
+      } catch (error) {
+        showToast("Failed to update book", "error")
+      }
     }
   }
 

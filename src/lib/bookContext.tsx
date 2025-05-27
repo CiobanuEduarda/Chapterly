@@ -1,6 +1,7 @@
 "use client"
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { api, PaginationParams, PaginatedResponse } from './api';
+import { api } from './api';
+import type { PaginationParams, PaginatedResponse } from './api';
 import { useNetwork } from './networkContext';
 import { useToast } from './toastContext';
 import { offlineStorage } from './offlineStorage';
@@ -108,7 +109,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
         showToast('Using offline book data', 'info');
       }
     }
-  }, [status, showToast, filter, sort, genre, rating, state.pagination.limit]);
+  }, [status, showToast, filter, sort, genre, rating, state.pagination.limit, state.books]);
 
   const loadMoreBooks = useCallback(async () => {
     if (state.isLoading || !state.pagination.hasMore) return;
@@ -142,7 +143,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
       setState(prev => ({ ...prev, isLoading: false }));
       showToast('Failed to load more books', 'error');
     }
-  }, [state.isLoading, state.pagination, filter, sort, genre, rating, showToast]);
+  }, [state.isLoading, state.pagination, filter, sort, genre, rating, showToast, state.books]);
 
   const addBook = useCallback(async (book: Omit<Book, 'id'>): Promise<Book> => {
     try {
@@ -161,11 +162,11 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to add book');
+        const errorData = await response.json() as { error?: string };
+        throw new Error(errorData.error ?? 'Failed to add book');
       }
 
-      const newBook = await response.json();
+      const newBook = await response.json() as Book;
 
       // Update local state
       setState(prev => ({
@@ -229,7 +230,7 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Failed to update book');
       }
 
-      const updatedBook = await response.json();
+      const updatedBook = await response.json() as Book;
 
       // Update local state
       setState(prev => ({
@@ -246,42 +247,69 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
 
   // Load books on mount and when network status, filter, sort, genre, or rating changes
   useEffect(() => {
-    refreshBooks();
-    // eslint-disable-next-line
-  }, [filter, sort, genre, rating, status]);
+    void refreshBooks();
+  }, [refreshBooks]);
 
-  // Function to generate a random book
+  // Auto-generate books functionality
   const generateRandomBook = useCallback(async () => {
     if (!autoGenerate) return;
-    // Check if user is logged in
-    if (typeof window !== 'undefined' && !localStorage.getItem('token')) {
-      alert('You must be logged in to auto-generate books.');
-      setAutoGenerate(false);
-      return;
+    
+    // Define genres as a string array
+    const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Science Fiction', 'Romance', 'Fantasy', 'Thriller', 'Biography'];
+    
+    // Create a new book with explicit type
+    const newBook: Omit<Book, 'id'> = {
+      title: `Generated Book ${Date.now()}`,
+      author: `Author ${Math.floor(Math.random() * 100)}`,
+      genre: genres[Math.floor(Math.random() * genres.length)] ?? 'Fiction', // Use nullish coalescing
+      price: Math.floor(Math.random() * 100) + 10,
+      rating: Math.floor(Math.random() * 5) + 1
+    };
+    
+    try {
+      await addBook(newBook);
+    } catch (error) {
+      console.error('Error generating book:', error);
     }
-    // ... existing code ...
-  }, []);
+  }, [autoGenerate, addBook]);
 
-  // Provide state and functions to children components
-  const value: BookContextType = {
-    state,
-    addBook,
-    updateBook,
-    deleteBook,
-    refreshBooks,
-    loadMoreBooks,
-    setFilter,
-    setSort,
-    setGenre,
-    setRating,
-    genre,
-    rating
-  };
+  // Set up auto-generation interval
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    if (autoGenerate) {
+      intervalId = setInterval(() => {
+        void generateRandomBook();
+      }, 5000); // 5 seconds
+    }
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [autoGenerate, generateRandomBook]);
 
-  return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
+  return (
+    <BookContext.Provider value={{
+      state,
+      addBook,
+      updateBook,
+      deleteBook,
+      refreshBooks,
+      loadMoreBooks,
+      setFilter,
+      setSort,
+      setGenre,
+      setRating,
+      genre,
+      rating
+    }}>
+      {children}
+    </BookContext.Provider>
+  );
 }
 
-// Custom hook to use the book context
 export function useBooks() {
   const context = useContext(BookContext);
   if (context === undefined) {

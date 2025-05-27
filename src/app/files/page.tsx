@@ -21,7 +21,7 @@ export default function FilesPage() {
   const fetchFiles = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/files');
-      const data = await response.json();
+      const data = await response.json() as FileInfo[];
       setFiles(data);
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -30,7 +30,7 @@ export default function FilesPage() {
   };
 
   useEffect(() => {
-    fetchFiles();
+    void fetchFiles();
   }, []);
 
   // Handle file selection
@@ -115,7 +115,7 @@ export default function FilesPage() {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files);
+      void handleFiles(e.dataTransfer.files);
     }
   };
 
@@ -123,7 +123,7 @@ export default function FilesPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files);
+      void handleFiles(e.target.files);
     }
   };
 
@@ -194,7 +194,9 @@ export default function FilesPage() {
           className="hidden"
         />
         <p className="text-lg text-[#042405]">
-          {dragActive
+          {uploading 
+            ? "Uploading files..."
+            : dragActive
             ? "Drop the files here..."
             : "Drag and drop files here, or click to select files"}
         </p>
@@ -212,7 +214,7 @@ export default function FilesPage() {
               <div className="flex-1">
                 <p className="font-semibold text-[#042405]">{file.originalName || file.filename}</p>
                 <p className="text-sm text-gray-500">
-                  {formatFileSize(file.size)} • {new Date(file.uploadDate!).toLocaleString()}
+                  {formatFileSize(file.size)} • {file.uploadDate ? new Date(file.uploadDate).toLocaleString() : 'Unknown date'}
                 </p>
                 {uploadProgress[file.filename] !== undefined && (
                   <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
@@ -225,13 +227,13 @@ export default function FilesPage() {
               </div>
               <div className="flex space-x-2">
                 <button
-                  onClick={() => handleDownload(file.filename)}
+                  onClick={() => void handleDownload(file.filename)}
                   className="px-3 py-1 bg-[#52796F] text-white rounded-md hover:bg-[#446157]"
                 >
                   Download
                 </button>
                 <button
-                  onClick={() => handleDelete(file.filename)}
+                  onClick={() => void handleDelete(file.filename)}
                   className="px-3 py-1 bg-[#C76E77] text-white rounded-md hover:bg-[#b55c64]"
                 >
                   Delete
