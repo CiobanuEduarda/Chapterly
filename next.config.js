@@ -5,6 +5,29 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3001/api/:path*',
+      },
+    ];
+  },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      express: false,
+      pg: false,
+      'pg-pool': false,
+    };
+    return config;
+  },
+  serverExternalPackages: ['pg', 'pg-pool'],
+  transpilePackages: ['@t3-oss/env-nextjs'],
+};
 
 export default config;

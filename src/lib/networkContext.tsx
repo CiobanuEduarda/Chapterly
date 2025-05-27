@@ -20,13 +20,13 @@ const SERVER_TIMEOUT = 5000; // 5 seconds
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<ConnectionStatus>('offline');
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
-
+  const API_URL= process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
   const checkServerAvailability = useCallback(async (): Promise<boolean> => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), SERVER_TIMEOUT);
       
-      await fetch(`${api.baseUrl}/books`, { 
+      await fetch(`${API_URL}/api/books`, { 
         method: 'HEAD',
         signal: controller.signal 
       });
@@ -34,6 +34,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutId);
       return true;
     } catch (error) {
+
       console.warn('Server availability check failed:', error);
       return false;
     }

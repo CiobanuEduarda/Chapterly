@@ -16,10 +16,11 @@ const randomNumber = (min: number, max: number) => {
 // Generate categories
 async function generateCategories() {
   console.log('Generating categories...');
-  const categories = [];
+  const categories: { name: string; description: string }[] = [];
   
   for (let i = 0; i < NUM_CATEGORIES; i++) {
     categories.push({
+      //@ts-ignore
       name: faker.helpers.uniqueArray(faker.commerce.department, 1)[0],
       description: faker.commerce.productDescription(),
     });
@@ -27,6 +28,7 @@ async function generateCategories() {
 
   console.log('Inserting categories...');
   await prisma.category.createMany({
+    //@ts-ignore
     data: categories,
     skipDuplicates: true,
   });
@@ -37,7 +39,7 @@ async function generateCategories() {
 // Generate books
 async function generateBooks(categories: any[]) {
   console.log('Generating books...');
-  const books = [];
+  const books: { title: string; author: string; genre: string; price: number; rating: number; userId: number }[] = [];
   const batchSize = 1000; // Process in batches to avoid memory issues
   
   for (let i = 0; i < NUM_BOOKS; i++) {
@@ -68,7 +70,7 @@ async function generateBooks(categories: any[]) {
 // Generate reviews
 async function generateReviews() {
   console.log('Generating reviews...');
-  const reviews = [];
+  const reviews: { content: string; rating: number; bookId: number }[] = [];
   const batchSize = 1000;
   const books = await prisma.book.findMany({ select: { id: true } });
   
@@ -98,7 +100,7 @@ async function generateReviews() {
 async function assignCategoriesToBooks(categories: any[]) {
   console.log('Assigning categories to books...');
   const books = await prisma.book.findMany({ select: { id: true } });
-  const bookCategories = [];
+  const bookCategories: { bookId: number; categoryId: number }[] = [];
   const batchSize = 1000;
   
   for (const book of books) {

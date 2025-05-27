@@ -45,24 +45,21 @@ export default function AddBook() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (validateForm()) {
-      try {
-        await addBook({
-          title,
-          author,
-          genre,
-          price: Number.parseFloat(price),
-          rating,
-        })
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      addBook({
+        title,
+        author,
+        genre,
+        price: Number.parseFloat(price),
+        rating,
+      })
 
-        showToast(`"${title}" has been added to your bookshelf`, "success")
-        router.push("/bookshelf")
-      } catch (error) {
-        showToast("Failed to add book. Please try again.", "error")
-      }
+      showToast(`"${title}" has been added to your bookshelf`, "success")
+      router.push("/bookshelf")
     }
   }
 

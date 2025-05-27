@@ -1,8 +1,6 @@
 import type { Book } from './bookContext';
 import { offlineStorage } from './offlineStorage';
 
-const API_URL = 'http://localhost:3001/api';
-
 // Helper function to get auth headers
 const getAuthHeaders = () => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -38,8 +36,6 @@ interface ApiResponse<T> {
 }
 
 export const api = {
-  baseUrl: API_URL,
-
   async getBooks(params?: PaginationParams): Promise<PaginatedResponse<Book>> {
     try {
       const queryParams = new URLSearchParams();
@@ -50,7 +46,7 @@ export const api = {
       if (params?.genre) queryParams.append('genre', params.genre);
       if (params?.rating) queryParams.append('rating', params.rating.toString());
 
-      const response = await fetch(`${API_URL}/books?${queryParams.toString()}`, {
+      const response = await fetch(`/api/books?${queryParams.toString()}`, {
         headers: getAuthHeaders()
       });
 
@@ -85,7 +81,7 @@ export const api = {
 
   async addBook(book: Omit<Book, 'id'>): Promise<Book> {
     try {
-      const response = await fetch(`${API_URL}/books`, {
+      const response = await fetch('/api/books', {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(book),
@@ -126,7 +122,7 @@ export const api = {
 
   async updateBook(id: number, book: Omit<Book, 'id'>): Promise<Book> {
     try {
-      const response = await fetch(`${API_URL}/books/${id}`, {
+      const response = await fetch(`/api/books/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(book),
@@ -164,7 +160,7 @@ export const api = {
 
   async deleteBook(id: number): Promise<void> {
     try {
-      const response = await fetch(`${API_URL}/books/${id}`, {
+      const response = await fetch(`/api/books/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });

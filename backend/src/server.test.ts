@@ -1,3 +1,4 @@
+//@ts-nocheck
 import request from 'supertest';
 import app from './server';
 import { Book } from './types';

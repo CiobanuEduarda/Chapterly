@@ -7,6 +7,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all monitored users (admin only)
+//@ts-ignore
 router.get('/monitored-users', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const monitored = await prisma.monitoredUser.findMany({

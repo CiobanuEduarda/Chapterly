@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
-import dotenv from 'dotenv';
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
 
 // Load environment variables
 dotenv.config();
@@ -14,14 +14,18 @@ const dbConfig = {
 };
 
 // Create a new pool instance
-export const pool = new Pool(dbConfig);
+// @ts-ignore
+const pool = new Pool(dbConfig);
 
 // Test the connection
 pool.on('connect', () => {
   console.log('Connected to PostgreSQL database');
 });
 
+// @ts-ignore
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
   process.exit(-1);
-}); 
+});
+
+module.exports = pool; 

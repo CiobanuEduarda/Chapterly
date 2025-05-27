@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { Book } from './bookContext';
 
@@ -30,6 +32,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [retryDelay, setRetryDelay] = useState(INITIAL_RETRY_DELAY);
 
   const connect = useCallback(() => {
+    if (typeof window === 'undefined') return; // Skip on server-side
+
     try {
       if (socket?.readyState === WebSocket.OPEN) {
         return; // Already connected
@@ -84,7 +88,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         socket.close();
       }
     };
-  }, [connect]);
+  }, [connect, socket]);
 
   return (
     <WebSocketContext.Provider value={{ isConnected, lastMessage }}>

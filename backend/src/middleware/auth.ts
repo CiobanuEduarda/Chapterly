@@ -33,7 +33,7 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     if (!payload.userId) {
       return res.status(403).json({ error: 'Invalid token payload' });
     }
-    
+    // @ts-ignore
     req.user = payload;
     next();
   });

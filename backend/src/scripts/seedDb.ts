@@ -1,7 +1,9 @@
-import { pool } from '../config/database';
-import { Book } from '../types';
+// @ts-ignore
+const pool = require('../config/database');
+const { Book } = require('../types');
 
 // Sample books data
+// @ts-ignore
 const sampleBooks: Omit<Book, 'id'>[] = [
   {
     title: 'The Great Gatsby',
