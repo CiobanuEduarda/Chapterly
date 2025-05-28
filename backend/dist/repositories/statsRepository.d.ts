@@ -21,21 +21,4 @@ export interface BookStats {
     }[];
 }
 export declare const getBookStatistics: () => Promise<BookStats>;
-export declare const getBooksWithStats: (page?: number, pageSize?: number) => Promise<{
-    id: number;
-    title: string;
-    author: string;
-    price: number;
-    rating: number;
-    reviews: {
-        rating: number;
-    }[];
-    categories: {
-        category: {
-            name: string;
-        };
-    }[];
-    _count: {
-        reviews: number;
-    };
-}[]>;
+export declare const getBooksWithStats: (page?: number, pageSize?: number) => Promise<any>;

@@ -27,11 +27,32 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+
+    /* Additional Options */
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    
+    /* Generated Files */
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+
+    /* Build Options */
+    "noEmitOnError": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "noImplicitUseStrict": true,
+    "suppressImplicitAnyIndexErrors": true
   },
   "include": [
     ".eslintrc.cjs",
     "next-env.d.ts",
+    "src/types/global.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
@@ -40,6 +61,11 @@
   ],
   "exclude": [
     "node_modules",
-    "backend/jmeter-results/**/*"
+    "backend/jmeter-results/**/*",
+    ".next/**/*",
+    "**/*.generated.*",
+    "**/*.d.ts",
+    "**/generated/**/*",
+    "backend/dist/**/*"
   ]
 }
